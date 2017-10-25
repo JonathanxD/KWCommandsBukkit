@@ -1,0 +1,84 @@
+plugins {
+    id 'com.github.hierynomus.license' version '0.13.1'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+}
+
+group 'com.github.jonathanxd'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'license'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+license {
+    header rootProject.file("LICENSE_HEADER")
+}
+
+defaultTasks 'licenseFormat', 'build', 'test', 'jar', 'shadowJar'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+    maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/" }
+}
+
+jar {
+    from "$rootProject.rootDir/LICENSE"
+
+    manifest {
+        attributes 'Implementation-Title': baseName,
+                'Implementation-Version': version
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: classes) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+    archives shadowJar
+}
+
+dependencies {
+    compile 'com.github.JonathanxD:KWCommands:1.1.3'
+    compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+license {
+    ext.name = project.name
+    ext.description = project.description
+    ext.organization = project.organization
+    ext.url = project.url
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    ext.email = project.email
+
+    exclude "**/*.info"
+    exclude "**/*.md"
+    exclude "res/**"
+    exclude "src/main/resources/**"
+    exclude "src/test/resources/**"
+    exclude "**/*.json"
+    exclude "**/*.yml"
+
+    header rootProject.file('LICENSE_HEADER')
+
+    sourceSets = project.sourceSets
+
+    ignoreFailures false
+    strictCheck true
+
+    mapping {
+        java = 'SLASHSTAR_STYLE'
+    }
+}

@@ -1,0 +1,3 @@
+name: KWCommandsBukkit
+version: 1.0
+main: com.github.jonathanxd.kwcommandsbukkit.KWCommandsBukkitPlugin

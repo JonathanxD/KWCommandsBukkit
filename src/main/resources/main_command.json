@@ -1,0 +1,24 @@
+{
+  "name": "kcommands",
+  "description": "Views help about commands registered in KWCommands manager.",
+  "handler": "method:kcommands",
+  "arguments": [
+    {
+      "id": "command",
+      "type": "Command",
+      "optional": true
+    }
+  ],
+  "requiredInfo": [
+    {
+      "id": { "tags": ["sender"], "type": "Sender" }
+    }
+  ],
+  "requirements": [
+    {
+      "info": { "tags": ["sender"], "type": "Sender" },
+      "tester": "com.github.jonathanxd.kwcommandsbukkit.req.PermissionRequirementTest",
+      "data": "kcommands.viewcommands"
+    }
+  ]
+}
