@@ -48,6 +48,7 @@ import com.github.jonathanxd.kwcommandsbukkit.util.CommandMapHelper;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -135,6 +136,22 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
         }
 
         @Override
+        public void unregisterCommand(Command command) {
+
+            org.bukkit.command.Command bukkit = this.commandMap.getCommand(command.getName().toString());
+
+            if (!(bukkit instanceof KWBukkitCommand))
+                return;
+
+            boolean unregister = bukkit.unregister(this.commandMap);
+
+            if (unregister) {
+                Object owner = ((KWBukkitCommand) bukkit).getPlugin();
+                this.getCommandManager().unregisterCommand(command, owner);
+            }
+        }
+
+        @Override
         public CommandManager getCommandManager() {
             return this.commandManager;
         }
@@ -142,6 +159,10 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
         @Override
         public CommandProcessor getCommandProcessor() {
             return this.commandProcessor;
+        }
+
+        public ReflectionEnvironment getReflectionEnvironment() {
+            return this.reflectionEnvironment;
         }
 
         @Override

@@ -87,6 +87,11 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
                 append +
                 Arrays.stream(args).collect(Collectors.joining(" "));
 
+        if (!this.dispatcher.getCommandManager().isRegistered(this.command, null)) {
+            this.dispatcher.getService().unregisterCommand(this.command);
+            return false;
+        }
+
         List<String> commandString = CommandStringUtil.getCommandStringListFromMessage(collect);
 
         this.dispatcher.dispatch(commandString, sender, manager -> {

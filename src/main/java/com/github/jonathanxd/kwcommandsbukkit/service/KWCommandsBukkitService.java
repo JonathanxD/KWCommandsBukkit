@@ -30,17 +30,68 @@ package com.github.jonathanxd.kwcommandsbukkit.service;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
+import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
 import com.github.jonathanxd.kwcommandsbukkit.completion.CommandSuggestionHelper;
 
 import org.bukkit.plugin.Plugin;
 
+/**
+ * Service to register KWCommands in Bukkit, registered on enable phase.
+ *
+ * Almost all features of KWCommands can be used, the only known not-supported feature is Regex
+ * command name.
+ */
 public interface KWCommandsBukkitService {
+    /**
+     * Registers {@code command} for {@code plugin} in Bukkit and in {@link #getCommandManager()}.
+     *
+     * @param command Command to register.
+     * @param plugin  Owner plugin.
+     */
     void registerCommand(Command command, Plugin plugin);
+
+    /**
+     * Register all commands defined in annotations {@link com.github.jonathanxd.kwcommands.reflect.annotation.Cmd},
+     * {@link com.github.jonathanxd.kwcommands.json.CmdJson} and {@link
+     * com.github.jonathanxd.kwcommands.json.CmdJsonSupplied} of class of {@code obj}
+     *
+     * @param obj    Instance of class with command annotations.
+     * @param plugin Owner plugin.
+     */
     void registerCommands(Object obj, Plugin plugin);
 
+    /**
+     * Unregisters the {@code command} in {@link #getCommandManager()} and in Bukkit.
+     *
+     * @param command Command to unregister.
+     */
+    void unregisterCommand(Command command);
+
+    /**
+     * Gets the command manager used to manage commands.
+     *
+     * @return Manager used to manage commands.
+     */
     CommandManager getCommandManager();
 
+    /**
+     * Gets the command processor used to parse and dispatch commands.
+     *
+     * @return Command processor used to parse and dispatch commands.
+     */
     CommandProcessor getCommandProcessor();
 
+    /**
+     * Gets the reflection environment used to parse annotations.
+     *
+     * @return Reflection environment used to parse annotations.
+     */
+    ReflectionEnvironment getReflectionEnvironment();
+
+    /**
+     * Gets the suggestion helper used to manage suggestions and complete command arguments.
+     *
+     * @return Suggestion helper used to manage suggestions and complete command arguments.
+     */
     CommandSuggestionHelper getSuggestionHelper();
 }
