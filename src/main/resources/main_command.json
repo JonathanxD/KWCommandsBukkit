@@ -6,6 +6,7 @@
     {
       "id": "command",
       "type": "Command",
+      "description": "Command to see help about",
       "optional": true
     }
   ],
