@@ -39,7 +39,6 @@ import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.Processors;
 import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonArguments;
-import com.github.jonathanxd.kwcommandsbukkit.common.CommonSuggestions;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonTypes;
 import com.github.jonathanxd.kwcommandsbukkit.completion.CommandSuggestionHelper;
 import com.github.jonathanxd.kwcommandsbukkit.completion.SuggestionManager;
@@ -48,7 +47,6 @@ import com.github.jonathanxd.kwcommandsbukkit.util.CommandMapHelper;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
-import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -97,7 +95,6 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
             this.reflectionEnvironment = new ReflectionEnvironment(this.commandManager);
 
             // Commons
-            CommonSuggestions.register(this.commandSuggestionHelper.getCompletionManager());
             CommonArguments.register(server, this.reflectionEnvironment);
             TypeResolverKt.registerDefaults(this.typeResolver);
             CommonTypes.register(this.typeResolver);

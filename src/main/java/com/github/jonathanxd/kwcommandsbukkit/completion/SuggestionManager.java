@@ -77,7 +77,7 @@ public class SuggestionManager {
     }
 
     public List<String> getSuggestionsFor(Argument<?> spec, String[] args, CommandManager commandManager) {
-        List<String> original = new ArrayList<>();
+        List<String> original = new ArrayList<>(spec.getPossibilities().invoke());
         List<String> yourSuggestions = new ArrayList<>();
         List<String> lastSuggestions = new ArrayList<>();
 
