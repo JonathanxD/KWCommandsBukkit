@@ -31,14 +31,18 @@ import com.github.jonathanxd.kwcommands.argument.Argument;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommandsbukkit.completion.append.AppendType;
 
+import org.bukkit.command.CommandSender;
+
 import java.util.List;
 
 public interface Suggestion {
     /**
      * Get argument completion.
      *
+     * @param sender          Command sender that requested completion.
      * @param spec            Argument
-     * @param input           Input arguments
+     * @param input           All input arguments, the last element is the argument to be
+     *                        completed.
      * @param lastSuggestions Clone List of last suggestions, modifying this list will not affect
      *                        original list
      * @param yourSuggestions Your suggestions, this argument is a instance of {@link
@@ -47,7 +51,8 @@ public interface Suggestion {
      * AppendType#APPEND}.
      * @see AppendType
      */
-    AppendType getSuggestions(Argument<?> spec,
+    AppendType getSuggestions(CommandSender sender,
+                              Argument<?> spec,
                               String[] input,
                               List<String> lastSuggestions,
                               List<String> yourSuggestions,

@@ -29,15 +29,20 @@ package com.github.jonathanxd.kwcommandsbukkit.completion;
 
 import com.github.jonathanxd.kwcommands.argument.Argument;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
+import com.github.jonathanxd.kwcommands.util.CommandUtilKt;
 import com.github.jonathanxd.kwcommandsbukkit.completion.append.AppendType;
 import com.github.jonathanxd.kwcommandsbukkit.completion.append.Mixer;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SuggestionManager {
     private final Server server;
@@ -76,8 +81,17 @@ public class SuggestionManager {
         return server;
     }
 
-    public List<String> getSuggestionsFor(Argument<?> spec, String[] args, CommandManager commandManager) {
-        List<String> original = new ArrayList<>(spec.getPossibilities().invoke());
+    public List<String> getSuggestionsFor(CommandSender sender, Argument<?> spec, String[] args, CommandManager commandManager) {
+
+        String lastArg = args.length > 0 ? args[args.length - 1] : "";
+        final String last = lastArg != null ? lastArg : "";
+
+
+        List<String> original = spec.getPossibilities().invoke().stream()
+                .filter(Objects::nonNull)
+                .filter(s -> s.startsWith(last))
+                .collect(Collectors.toList());
+
         List<String> yourSuggestions = new ArrayList<>();
         List<String> lastSuggestions = new ArrayList<>();
 
@@ -86,9 +100,16 @@ public class SuggestionManager {
             lastSuggestions.clear();
             lastSuggestions.addAll(original);
 
-            AppendType appendType = completion.getSuggestions(spec, args, lastSuggestions, yourSuggestions, commandManager);
+            AppendType appendType = completion.getSuggestions(sender, spec, args, lastSuggestions, yourSuggestions, commandManager);
 
             AppendType.apply(appendType, original, yourSuggestions, new Mixer.StringListMixer());
+        }
+
+        if (original.isEmpty()) { // Argument tip
+            sender.sendMessage(ChatColor.GOLD + "= Tip =");
+            sender.sendMessage(ChatColor.GREEN + "Required argument: " + CommandUtilKt.getNameOrId(spec));
+            sender.sendMessage(ChatColor.GREEN + "Type: " + CommandUtilKt.getTypeStr(spec));
+            sender.sendMessage(ChatColor.GREEN + "Description: " + ChatColor.AQUA + spec.getDescription());
         }
 
         return original;

@@ -33,6 +33,8 @@ import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.command.CommandName;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 
+import org.bukkit.command.CommandSender;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,6 +42,8 @@ import java.util.List;
 
 import kotlin.text.RegexOption;
 
+// Hard to understand, I know, this is a fragment of another project
+// Rewrite is needed
 public final class CommandSuggestionHelper {
 
     private final CommandManager commandManager;
@@ -67,6 +71,9 @@ public final class CommandSuggestionHelper {
         return finds;
     }
 
+    /**
+     * Tests if {@code name} matches the name of {@code spec} command.
+     */
     private static String testName(String name, Command spec) {
         List<CommandName> cnames = Collections3.listOf(spec.getName());
 
@@ -106,7 +113,7 @@ public final class CommandSuggestionHelper {
         return this.completionManager;
     }
 
-    public List<String> getSuggestions(String[] names, Command root) {
+    public List<String> getSuggestions(CommandSender sender, String[] names, Command root) {
 
         List<String> suggestions = new ArrayList<>();
 
@@ -124,7 +131,7 @@ public final class CommandSuggestionHelper {
                 List<String> partial = CommandSuggestionHelper.partial(name, current);
 
                 if (partial.isEmpty()) {
-                    List<String> next = this.argumentSuggestions(current, Arrays.copyOfRange(names, x, names.length));
+                    List<String> next = this.argumentSuggestions(sender, current, Arrays.copyOfRange(names, x, names.length));
 
                     if (next.isEmpty()) {
                         return Collections.emptyList();
@@ -140,27 +147,28 @@ public final class CommandSuggestionHelper {
         return suggestions;
     }
 
-    private List<String> argumentSuggestions(Command current, String[] args) {
+    private List<String> argumentSuggestions(CommandSender sender, Command current, String[] args) {
         List<String> argumentSuggestions = new ArrayList<>();
         if (completionManager == null)
             return argumentSuggestions;
 
         List<Argument<?>> arguments = current.getArguments();
-        for (int i = args.length - 1; i < arguments.size(); i++) {
+        int pos = args.length - 1;
 
-            Argument<?> argumentSpec = arguments.get(i);
+        if (pos < arguments.size()) {
+            Argument<?> argumentSpec = arguments.get(pos);
 
-            int end = i + 1;
-
-            String[] parseArgs = Arrays.copyOfRange(args, i, end);
-
-            argumentSuggestions.addAll(completionManager.getSuggestionsFor(argumentSpec, parseArgs, commandManager));
+            argumentSuggestions.addAll(completionManager.getSuggestionsFor(sender, argumentSpec, args, commandManager));
         }
 
         return argumentSuggestions;
     }
 
-    public List<String> getSuggestionsFor(CommandManager commandManager, String commandName, String[] args, boolean full) {
+    public List<String> getSuggestionsFor(CommandSender sender,
+                                          CommandManager commandManager,
+                                          String commandName,
+                                          String[] args,
+                                          boolean full) {
 
         List<String> suggestions = new ArrayList<>();
 
@@ -174,13 +182,13 @@ public final class CommandSuggestionHelper {
                     continue;
                 }
 
-                List<String> suggestionsOfSub = this.getSuggestions(args, commandSpec);
+                List<String> suggestionsOfSub = this.getSuggestions(sender, args, commandSpec);
                 if (!suggestionsOfSub.isEmpty()) {
                     suggestions.addAll(suggestionsOfSub);
                     break;
                 } else if (args.length != 0) {
 
-                    List<String> argsList = this.argumentSuggestions(commandSpec, args);
+                    List<String> argsList = this.argumentSuggestions(sender, commandSpec, args);
 
                     if (!argsList.isEmpty()) {
                         suggestions.addAll(argsList);

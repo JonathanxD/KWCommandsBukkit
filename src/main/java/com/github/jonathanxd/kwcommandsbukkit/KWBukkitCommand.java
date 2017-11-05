@@ -109,7 +109,7 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         CommandSuggestionHelper suggestionHelper = this.dispatcher.getService().getSuggestionHelper();
 
-        List<String> suggestions = suggestionHelper.getSuggestionsFor(this.dispatcher.getCommandManager(),
+        List<String> suggestions = suggestionHelper.getSuggestionsFor(sender, this.dispatcher.getCommandManager(),
                 this.command.getName().toString(),
                 args,
                 true);
