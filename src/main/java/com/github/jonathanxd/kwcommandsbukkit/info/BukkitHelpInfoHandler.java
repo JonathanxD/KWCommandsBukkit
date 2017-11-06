@@ -62,6 +62,7 @@ public final class BukkitHelpInfoHandler implements HelpInfoHandler {
 
                     if (tester instanceof PermissionRequirementTest) {
                         printer.printPlain("You don't have permission to run this command");
+                        printer.flush();
                         print = false;
                     }
                 }
