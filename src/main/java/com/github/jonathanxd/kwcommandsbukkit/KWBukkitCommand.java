@@ -31,7 +31,6 @@ import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.command.CommandName;
 import com.github.jonathanxd.kwcommands.exception.CommandException;
 import com.github.jonathanxd.kwcommands.exception.CommandNotFoundException;
-import com.github.jonathanxd.kwcommands.help.CommonHelpInfoHandler;
 import com.github.jonathanxd.kwcommands.help.HelpInfoHandler;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.manager.InformationManager;
@@ -41,6 +40,7 @@ import com.github.jonathanxd.kwcommands.processor.CommandResult;
 import com.github.jonathanxd.kwcommands.processor.MissingInformationResult;
 import com.github.jonathanxd.kwcommands.processor.UnsatisfiedRequirementsResult;
 import com.github.jonathanxd.kwcommandsbukkit.completion.CommandSuggestionHelper;
+import com.github.jonathanxd.kwcommandsbukkit.info.BukkitHelpInfoHandler;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitInfo;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitInformationProvider;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
@@ -122,7 +122,7 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
     }
 
     static final class Dispatcher {
-        private static final HelpInfoHandler handler = new CommonHelpInfoHandler();
+        private static final HelpInfoHandler handler = new BukkitHelpInfoHandler();
         private final Server server;
         private final InformationManager informationManager = new InformationManagerImpl();
         private final KWCommandsBukkitService service;
@@ -133,6 +133,12 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
             PrinterUtil.getGreenPrinter(server.getConsoleSender());
             PrinterUtil.getRedPrinter(server.getConsoleSender());
             this.informationManager.registerInformationProvider(new BukkitInformationProvider(this.server));
+        }
+
+        @NotNull
+        @Contract(pure = true)
+        private static Boolean isError(CommandResult it) {
+            return it instanceof UnsatisfiedRequirementsResult || it instanceof MissingInformationResult;
         }
 
         private boolean dispatch(List<String> commandString,
@@ -159,19 +165,13 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
 
                 return true;
             } catch (CommandNotFoundException e) {
-                sender.sendMessage(ChatColor.RED+"Unexpected fail. Command not found: "+e.getCommandStr());
+                sender.sendMessage(ChatColor.RED + "Unexpected fail. Command not found: " + e.getCommandStr());
                 e.printStackTrace();
                 return false;
             } catch (CommandException ex) {
                 this.getHandler().handleCommandException(ex, PrinterUtil.getRedPrinter(sender));
             }
             return false;
-        }
-
-        @NotNull
-        @Contract(pure = true)
-        private static Boolean isError(CommandResult it) {
-            return it instanceof UnsatisfiedRequirementsResult || it instanceof MissingInformationResult;
         }
 
         private HelpInfoHandler getHandler() {

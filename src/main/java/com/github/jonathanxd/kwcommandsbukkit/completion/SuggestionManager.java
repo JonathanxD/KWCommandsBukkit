@@ -110,6 +110,7 @@ public class SuggestionManager {
             sender.sendMessage(ChatColor.GREEN + "Required argument: " + CommandUtilKt.getNameOrId(spec));
             sender.sendMessage(ChatColor.GREEN + "Type: " + CommandUtilKt.getTypeStr(spec));
             sender.sendMessage(ChatColor.GREEN + "Description: " + ChatColor.AQUA + spec.getDescription());
+            original.add(""); // No Bukkit, you can't complete with Player name if I don't add players to auto complete, stop doing this shit.
         }
 
         return original;
