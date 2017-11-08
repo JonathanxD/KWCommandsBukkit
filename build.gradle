@@ -51,7 +51,7 @@ artifacts {
 
 dependencies {
     compile 'com.github.JonathanxD:KWCommands:1.1.14'
-    compile 'com.github.JonathanxD:JwIUtils:4.9.2'
+    compile 'com.github.JonathanxD:JwIUtils:4.9.3'
     compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
