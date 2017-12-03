@@ -27,21 +27,29 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit;
 
+import com.github.jonathanxd.iutils.localization.LocaleManager;
 import com.github.jonathanxd.iutils.reflection.Reflection;
+import com.github.jonathanxd.iutils.text.converter.TextLocalizer;
 import com.github.jonathanxd.kwcommands.command.Command;
+import com.github.jonathanxd.kwcommands.completion.Completion;
+import com.github.jonathanxd.kwcommands.completion.CompletionImpl;
+import com.github.jonathanxd.kwcommands.dispatch.CommandDispatcher;
+import com.github.jonathanxd.kwcommands.dispatch.CommandDispatcherImpl;
 import com.github.jonathanxd.kwcommands.json.DefaultJsonParser;
 import com.github.jonathanxd.kwcommands.json.JsonCommandParser;
 import com.github.jonathanxd.kwcommands.json.MapTypeResolver;
 import com.github.jonathanxd.kwcommands.json.TypeResolverKt;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.manager.CommandManagerImpl;
+import com.github.jonathanxd.kwcommands.manager.InstanceProvider;
+import com.github.jonathanxd.kwcommands.parser.CommandParser;
+import com.github.jonathanxd.kwcommands.parser.CommandParserImpl;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.Processors;
 import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
+import com.github.jonathanxd.kwcommands.util.KLocale;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonArguments;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonTypes;
-import com.github.jonathanxd.kwcommandsbukkit.completion.CommandSuggestionHelper;
-import com.github.jonathanxd.kwcommandsbukkit.completion.SuggestionManager;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
 import com.github.jonathanxd.kwcommandsbukkit.util.CommandMapHelper;
 
@@ -51,9 +59,23 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import kotlin.jvm.functions.Function1;
+import java.nio.file.Paths;
 
 public class KWCommandsBukkitPlugin extends JavaPlugin {
+
+    public static final LocaleManager LOCALE_MANAGER = KLocale.INSTANCE.getLocaleManager();
+    public static final TextLocalizer LOCALIZER = KLocale.INSTANCE.getLocalizer();
+
+    static {
+        KLocale.INSTANCE.getDefaultLocale().load(
+                Paths.get("bukkit/lang/"),
+                "types",
+                KWCommandsBukkitPlugin.class.getClassLoader());
+        KLocale.INSTANCE.getPtBr().load(
+                Paths.get("bukkit/lang/"),
+                "types",
+                KWCommandsBukkitPlugin.class.getClassLoader());
+    }
 
     @Override
     public void onEnable() {
@@ -64,7 +86,6 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
                         new KWCommandsBukkitServiceImpl(this.getServer()),
                         this,
                         ServicePriority.Normal);
-
 
 
         this.getLogger().info("Enabled KWCommandsBukkit");
@@ -80,7 +101,9 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
         private final KWBukkitCommand.Dispatcher dispatcher;
         private final CommandManager commandManager;
         private final CommandProcessor commandProcessor;
-        private final CommandSuggestionHelper commandSuggestionHelper;
+        private final CommandParser commandParser;
+        private final CommandDispatcher commandDispatcher;
+        private final Completion completion;
         private final ReflectionEnvironment reflectionEnvironment;
         private final MapTypeResolver typeResolver = new MapTypeResolver();
         private final JsonCommandParser parser = new DefaultJsonParser(typeResolver);
@@ -90,19 +113,21 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
             this.commandMap = CommandMapHelper.getSimpleCommandMap(server);
             this.dispatcher = new KWBukkitCommand.Dispatcher(server, this);
             this.commandManager = new CommandManagerImpl();
-            this.commandProcessor = Processors.createCommonProcessor(this.commandManager);
-            this.commandSuggestionHelper = new CommandSuggestionHelper(this.commandManager, new SuggestionManager(server));
+            this.commandParser = new CommandParserImpl(this.commandManager);
+            this.commandDispatcher = new CommandDispatcherImpl(this.commandManager);
+            this.commandProcessor = Processors.createCommonProcessor(this.commandManager, this.commandParser, this.commandDispatcher);
+            this.completion = new CompletionImpl(this.commandParser);
             this.reflectionEnvironment = new ReflectionEnvironment(this.commandManager);
 
             // Commons
-            CommonArguments.register(server, this.reflectionEnvironment);
+            CommonArguments.register(server, this.reflectionEnvironment, LOCALE_MANAGER);
             TypeResolverKt.registerDefaults(this.typeResolver);
             CommonTypes.register(this.typeResolver);
         }
 
         @Override
         public void registerCommand(Command command, Plugin plugin) {
-            boolean register = this.commandMap.register(command.getName().toString(), plugin.getName(),
+            boolean register = this.commandMap.register(command.getName(), plugin.getName(),
                     new KWBukkitCommand(plugin, command, this.dispatcher));
 
             if (register)
@@ -111,7 +136,7 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
 
         @Override
         public void registerCommands(Object obj, Plugin plugin) {
-            Function1<Class<?>, Object> instanceProvider = clazz -> {
+            InstanceProvider instanceProvider = clazz -> {
                 if (clazz == obj.getClass())
                     return obj;
 
@@ -120,7 +145,7 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
                 } catch (Exception ignored) {
                 }
 
-                throw new IllegalStateException("Cannot resolve instance of '"+clazz+"'!");
+                throw new IllegalStateException("Cannot resolve instance of '" + clazz + "'!");
             };
 
             for (Command command : this.reflectionEnvironment.fromClass(obj.getClass(), instanceProvider, plugin)) {
@@ -135,7 +160,7 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
         @Override
         public void unregisterCommand(Command command) {
 
-            org.bukkit.command.Command bukkit = this.commandMap.getCommand(command.getName().toString());
+            org.bukkit.command.Command bukkit = this.commandMap.getCommand(command.getName());
 
             if (!(bukkit instanceof KWBukkitCommand))
                 return;
@@ -158,13 +183,23 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
             return this.commandProcessor;
         }
 
-        public ReflectionEnvironment getReflectionEnvironment() {
-            return this.reflectionEnvironment;
+        @Override
+        public CommandDispatcher getCommandDispatcher() {
+            return this.commandDispatcher;
         }
 
         @Override
-        public CommandSuggestionHelper getSuggestionHelper() {
-            return this.commandSuggestionHelper;
+        public Completion getCompletion() {
+            return this.completion;
+        }
+
+        @Override
+        public CommandParser getCommandParser() {
+            return this.commandParser;
+        }
+
+        public ReflectionEnvironment getReflectionEnvironment() {
+            return this.reflectionEnvironment;
         }
     }
 }

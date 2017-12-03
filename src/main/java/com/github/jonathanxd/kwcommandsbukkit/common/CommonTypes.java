@@ -27,6 +27,7 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit.common;
 
+import com.github.jonathanxd.iutils.localization.Locale;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.json.MapTypeResolver;
 
@@ -53,6 +54,7 @@ public class CommonTypes {
         typeResolver.set("Server", Server.class);
         typeResolver.set("Plugin", Plugin.class);
         typeResolver.set("Command", Command.class);
+        typeResolver.set("Locale", Locale.class);
     }
 
 }

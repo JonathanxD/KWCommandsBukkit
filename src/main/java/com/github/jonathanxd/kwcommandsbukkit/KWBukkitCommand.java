@@ -27,10 +27,9 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit;
 
+import com.github.jonathanxd.iutils.object.Either;
 import com.github.jonathanxd.kwcommands.command.Command;
-import com.github.jonathanxd.kwcommands.command.CommandName;
-import com.github.jonathanxd.kwcommands.exception.CommandException;
-import com.github.jonathanxd.kwcommands.exception.CommandNotFoundException;
+import com.github.jonathanxd.kwcommands.fail.ParseFail;
 import com.github.jonathanxd.kwcommands.help.HelpInfoHandler;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.manager.InformationManager;
@@ -39,12 +38,10 @@ import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.CommandResult;
 import com.github.jonathanxd.kwcommands.processor.MissingInformationResult;
 import com.github.jonathanxd.kwcommands.processor.UnsatisfiedRequirementsResult;
-import com.github.jonathanxd.kwcommandsbukkit.completion.CommandSuggestionHelper;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitHelpInfoHandler;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitInfo;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitInformationProvider;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
-import com.github.jonathanxd.kwcommandsbukkit.util.CommandStringUtil;
 import com.github.jonathanxd.kwcommandsbukkit.util.PrinterUtil;
 
 import org.bukkit.ChatColor;
@@ -56,6 +53,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -68,8 +66,10 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
     private final Dispatcher dispatcher;
 
     KWBukkitCommand(Plugin plugin, Command command, Dispatcher dispatcher) {
-        super(command.getName().toString(), command.getDescription(), command.getDescription(),
-                CollectionsKt.map(command.getAlias(), CommandName::toString));
+        super(command.getName(),
+                KWCommandsBukkitPlugin.LOCALIZER.localize(command.getDescription()),
+                KWCommandsBukkitPlugin.LOCALIZER.localize(command.getDescription()),
+                command.getAlias());
         this.plugin = plugin;
         this.command = command;
         this.dispatcher = dispatcher;
@@ -80,10 +80,25 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
         return this.plugin;
     }
 
+    private String getCommandsString(String[] args) {
+        String append = args.length == 0 ? "" : " " + Arrays.stream(args).collect(Collectors.joining(" "));
+        return command.getName() + append;
+    }
+
+    private Consumer<InformationManager> registerSender(CommandSender sender) {
+        return manager -> {
+            manager.registerInformation(BukkitInfo.SENDER_ID, sender, "Dispatcher of command.");
+
+            if (sender instanceof Player) {
+                manager.registerInformation(BukkitInfo.PLAYER_ID, sender, "Dispatcher of command.");
+            }
+        };
+    }
+
     @Override
     public boolean execute(CommandSender sender, String commandLabel, String[] args) {
         String append = args.length == 0 ? "" : " ";
-        String collect = command.getName().toString() +
+        String commandString = command.getName() +
                 append +
                 Arrays.stream(args).collect(Collectors.joining(" "));
 
@@ -92,30 +107,21 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
             return false;
         }
 
-        List<String> commandString = CommandStringUtil.getCommandStringListFromMessage(collect);
-
-        this.dispatcher.dispatch(commandString, sender, manager -> {
-            manager.registerInformation(BukkitInfo.SENDER_ID, sender, "Dispatcher of command.");
-
-            if (sender instanceof Player) {
-                manager.registerInformation(BukkitInfo.PLAYER_ID, sender, "Dispatcher of command.");
-            }
-        });
+        this.dispatcher.dispatch(commandString, this.getPlugin(), sender, this.registerSender(sender));
 
         return true;
     }
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        CommandSuggestionHelper suggestionHelper = this.dispatcher.getService().getSuggestionHelper();
+        String commandString = this.getCommandsString(args);
+        List<String> complete = this.dispatcher.complete(commandString, this.getPlugin(), sender, this.registerSender(sender));
 
-        List<String> suggestions = suggestionHelper.getSuggestionsFor(sender, this.dispatcher.getCommandManager(),
-                this.command.getName().toString(),
-                args,
-                true);
+        if (complete.size() == 1 && complete.get(0).equals(" "))
+            return super.tabComplete(sender, alias, args);
 
-        if (!suggestions.isEmpty()) {
-            return suggestions;
+        if (!complete.isEmpty()) {
+            return complete;
         }
 
         return super.tabComplete(sender, alias, args);
@@ -141,37 +147,53 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
             return it instanceof UnsatisfiedRequirementsResult || it instanceof MissingInformationResult;
         }
 
-        private boolean dispatch(List<String> commandString,
-                                 CommandSender sender,
-                                 Consumer<InformationManager> managerConsumer) {
+        List<String> complete(String commandString,
+                              Plugin owner,
+                              CommandSender sender,
+                              Consumer<InformationManager> managerConsumer) {
             try {
                 InformationManager manager = this.informationManager.copy();
 
                 managerConsumer.accept(manager);
 
-                List<CommandResult> commandResults = this.getCommandProcessor().processAndHandleWithOwnerFunc(commandString, name -> {
-                    String ownerPlugin = CommandStringUtil.getCommandOwnerPlugin(name);
+                return this.getService().getCompletion().complete(commandString, owner, manager);
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "Exception during command completion, report to developer (include the server log)");
+                e.printStackTrace();
+                return Collections.emptyList();
+            }
+        }
 
-                    if (ownerPlugin != null)
-                        return this.server.getPluginManager().getPlugin(ownerPlugin);
+        void dispatch(String commandString,
+                      Plugin owner,
+                      CommandSender sender,
+                      Consumer<InformationManager> managerConsumer) {
+            try {
+                InformationManager manager = this.informationManager.copy();
 
-                    return null;
-                }, manager);
+                managerConsumer.accept(manager);
+
+                Either<ParseFail, List<CommandResult>> result = this.getCommandProcessor()
+                        .parseAndDispatch(commandString, owner, manager);
+
+                if (result.isLeft()) {
+                    this.getHandler().handleFail(result.getLeft(), PrinterUtil.getRedPrinter(sender));
+                    return/* false*/;
+                }
+
+                List<CommandResult> commandResults = result.getRight();
 
                 if (CollectionsKt.any(commandResults, Dispatcher::isError)) {
                     this.getHandler().handleResults(commandResults, PrinterUtil.getRedPrinter(sender));
-                    return false;
+                    return/* false*/;
                 }
 
-                return true;
-            } catch (CommandNotFoundException e) {
-                sender.sendMessage(ChatColor.RED + "Unexpected fail. Command not found: " + e.getCommandStr());
+                //return true;
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "Exception during command dispatch, report to developer (include the server log)");
                 e.printStackTrace();
-                return false;
-            } catch (CommandException ex) {
-                this.getHandler().handleCommandException(ex, PrinterUtil.getRedPrinter(sender));
+                //return false;
             }
-            return false;
         }
 
         private HelpInfoHandler getHandler() {

@@ -1,0 +1,18 @@
+validator.player=Online player
+validator.invalid_player=Online player not found
+
+validator.any_player=Validator of online or offline player
+validator.invalid_any_player=Online or offline player not found
+
+validator.plugin=Validator of plugin
+validator.invalid_plugin=Plugin not found
+
+validator.command=Validator of command
+validator.invalid_command=Command not found
+
+validator.locale=Validator of locale
+validator.invalid_locale=Locale not found
+
+message.permission=You don't have the permission to run this command
+message.locale_set=Locale was set to $locale
+requirement.permission=Permission tester

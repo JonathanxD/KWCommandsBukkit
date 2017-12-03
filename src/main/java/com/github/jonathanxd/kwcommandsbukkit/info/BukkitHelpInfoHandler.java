@@ -27,7 +27,7 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit.info;
 
-import com.github.jonathanxd.kwcommands.exception.CommandException;
+import com.github.jonathanxd.kwcommands.fail.ParseFail;
 import com.github.jonathanxd.kwcommands.help.CommonHelpInfoHandler;
 import com.github.jonathanxd.kwcommands.help.HelpInfoHandler;
 import com.github.jonathanxd.kwcommands.printer.Printer;
@@ -35,6 +35,7 @@ import com.github.jonathanxd.kwcommands.processor.CommandResult;
 import com.github.jonathanxd.kwcommands.processor.UnsatisfiedRequirementsResult;
 import com.github.jonathanxd.kwcommands.requirement.RequirementTester;
 import com.github.jonathanxd.kwcommands.requirement.UnsatisfiedRequirement;
+import com.github.jonathanxd.kwcommandsbukkit.Texts;
 import com.github.jonathanxd.kwcommandsbukkit.req.PermissionRequirementTest;
 
 import java.util.ArrayList;
@@ -44,8 +45,14 @@ public final class BukkitHelpInfoHandler implements HelpInfoHandler {
     private final HelpInfoHandler wrapped = new CommonHelpInfoHandler();
 
     @Override
-    public void handleCommandException(CommandException e, Printer printer) {
-        wrapped.handleCommandException(e, printer);
+    public void handleFail(ParseFail parseFail, Printer printer) {
+        this.wrapped.handleFail(parseFail, printer);
+    }
+
+    @Override
+    public void handleResult(CommandResult commandResult, Printer printer) {
+        if (!this.handlePermResult(commandResult, printer))
+            this.wrapped.handleResult(commandResult, printer);
     }
 
     @Override
@@ -53,26 +60,59 @@ public final class BukkitHelpInfoHandler implements HelpInfoHandler {
         List<CommandResult> results = new ArrayList<>();
 
         for (CommandResult commandResult : list) {
-            boolean print = true;
-
             if (commandResult instanceof UnsatisfiedRequirementsResult) {
-                for (UnsatisfiedRequirement<?> unsatisfiedRequirement :
-                        ((UnsatisfiedRequirementsResult) commandResult).getUnsatisfiedRequirements()) {
-                    RequirementTester<?, ?> tester = unsatisfiedRequirement.getRequirement().getTester();
+                List<UnsatisfiedRequirement<?>> reqs =
+                        new ArrayList<>(((UnsatisfiedRequirementsResult) commandResult).getUnsatisfiedRequirements());
 
-                    if (tester instanceof PermissionRequirementTest) {
-                        printer.printPlain("You don't have permission to run this command");
-                        printer.flush();
-                        print = false;
-                    }
+                reqs.removeIf(unsatisfiedRequirement -> this.handlePermResult(unsatisfiedRequirement, printer));
+
+                if (!reqs.isEmpty()) {
+                    UnsatisfiedRequirementsResult r = new UnsatisfiedRequirementsResult(reqs,
+                            commandResult.getRootContainer(),
+                            commandResult.getContainer());
+                    results.add(r);
                 }
+            } else {
+                results.add(commandResult);
             }
 
-            if (print)
-                results.add(commandResult);
         }
 
         if (!results.isEmpty())
             wrapped.handleResults(results, printer);
+    }
+
+    private boolean handlePermResult(CommandResult commandResult, Printer printer) {
+        if (commandResult instanceof UnsatisfiedRequirementsResult) {
+            for (UnsatisfiedRequirement<?> unsatisfiedRequirement :
+                    ((UnsatisfiedRequirementsResult) commandResult).getUnsatisfiedRequirements()) {
+
+                if (this.isPerm(unsatisfiedRequirement)) {
+                    printer.printPlain(Texts.I.getPermissionText());
+                    printer.flush();
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private boolean handlePermResult(UnsatisfiedRequirement<?> unsatisfiedRequirement, Printer printer) {
+
+        if (this.isPerm(unsatisfiedRequirement)) {
+            printer.printPlain(Texts.I.getPermissionText());
+            printer.flush();
+            return true;
+        }
+
+        return false;
+    }
+
+    private boolean isPerm(UnsatisfiedRequirement<?> unsatisfiedRequirement) {
+        RequirementTester<?, ?> tester = unsatisfiedRequirement.getRequirement().getTester();
+
+        return tester instanceof PermissionRequirementTest;
+
     }
 }

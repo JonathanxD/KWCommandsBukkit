@@ -29,6 +29,7 @@ package com.github.jonathanxd.kwcommandsbukkit.util;
 
 import com.github.jonathanxd.kwcommands.printer.CommonPrinter;
 import com.github.jonathanxd.kwcommands.printer.Printer;
+import com.github.jonathanxd.kwcommandsbukkit.KWCommandsBukkitPlugin;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -70,8 +71,8 @@ public class PrinterUtil {
     }
 
     private static Printer getPrinter(CommandSender sender, ChatColor color) {
-        return new CommonPrinter(f -> {
-            sender.sendMessage(color + f);
+        return new CommonPrinter(KWCommandsBukkitPlugin.LOCALIZER, f -> {
+            sender.sendMessage(color.toString() + f);
             return Unit.INSTANCE;
         }, false);
     }

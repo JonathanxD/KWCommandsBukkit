@@ -27,8 +27,9 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit;
 
+import com.github.jonathanxd.iutils.localization.Locale;
+import com.github.jonathanxd.iutils.text.Text;
 import com.github.jonathanxd.kwcommands.command.Command;
-import com.github.jonathanxd.kwcommands.command.CommandName;
 import com.github.jonathanxd.kwcommands.json.CmdJson;
 import com.github.jonathanxd.kwcommands.json.CmdJsonType;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
@@ -42,14 +43,10 @@ import org.bukkit.command.CommandSender;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
-import kotlin.collections.CollectionsKt;
-
-@CmdJson(type = CmdJsonType.RESOURCE, value = "/main_command.json")
 public class KWCommandsBukkitCommand {
 
+    @CmdJson(type = CmdJsonType.RESOURCE, value = "/main_command.json")
     public void kcommands(@Arg("command") Command command,
                           @Info CommandSender sender,
                           @Info CommandManager commandManager) {
@@ -76,7 +73,7 @@ public class KWCommandsBukkitCommand {
                 greenPrinter.printFromRoot(ncommand, 0);
 
                 if (iterator.hasNext())
-                    greenPrinter.printPlain("------------------------------------");
+                    greenPrinter.printPlain(Text.single("------------------------------------"));
 
                 greenPrinter.flush();
 
@@ -84,4 +81,14 @@ public class KWCommandsBukkitCommand {
         }
     }
 
+    @CmdJson(type = CmdJsonType.RESOURCE, value = "/set_locale_command.json")
+    public void setlocale(@Arg("locale") Locale locale,
+                          @Info CommandSender sender) {
+
+        Printer greenPrinter = PrinterUtil.getGreenPrinter(sender);
+        KWCommandsBukkitPlugin.LOCALIZER.setDefaultLocale(locale);
+
+        greenPrinter.printPlain(Texts.I.getLocaleSetText(Text.single(locale.getName())));
+        greenPrinter.flush();
+    }
 }

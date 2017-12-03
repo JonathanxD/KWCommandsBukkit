@@ -27,18 +27,26 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit.req;
 
+import com.github.jonathanxd.iutils.text.TextComponent;
 import com.github.jonathanxd.kwcommands.information.Information;
 import com.github.jonathanxd.kwcommands.requirement.Requirement;
 import com.github.jonathanxd.kwcommands.requirement.RequirementTester;
+import com.github.jonathanxd.kwcommandsbukkit.Texts;
 
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permissible;
+import org.jetbrains.annotations.NotNull;
 
 public class PermissionRequirementTest implements RequirementTester<Permissible, String> {
 
     public static final PermissionRequirementTest INSTANCE = new PermissionRequirementTest();
 
     protected PermissionRequirementTest() {
+    }
+
+    @NotNull
+    @Override
+    public TextComponent getName() {
+        return Texts.I.getRequirementPermissionText();
     }
 
     @Override

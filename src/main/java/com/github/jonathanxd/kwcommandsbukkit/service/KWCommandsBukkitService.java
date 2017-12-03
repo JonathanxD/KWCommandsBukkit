@@ -28,10 +28,12 @@
 package com.github.jonathanxd.kwcommandsbukkit.service;
 
 import com.github.jonathanxd.kwcommands.command.Command;
+import com.github.jonathanxd.kwcommands.completion.Completion;
+import com.github.jonathanxd.kwcommands.dispatch.CommandDispatcher;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
+import com.github.jonathanxd.kwcommands.parser.CommandParser;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
-import com.github.jonathanxd.kwcommandsbukkit.completion.CommandSuggestionHelper;
 
 import org.bukkit.plugin.Plugin;
 
@@ -82,16 +84,31 @@ public interface KWCommandsBukkitService {
     CommandProcessor getCommandProcessor();
 
     /**
+     * Gets the command parser.
+     *
+     * @return Command parser.
+     */
+    CommandParser getCommandParser();
+
+    /**
+     * Gets the command dispatcher.
+     *
+     * @return Command dispatcher.
+     */
+    CommandDispatcher getCommandDispatcher();
+
+    /**
+     * Gets the completion helper.
+     *
+     * @return Completion helper.
+     */
+    Completion getCompletion();
+
+    /**
      * Gets the reflection environment used to parse annotations.
      *
      * @return Reflection environment used to parse annotations.
      */
     ReflectionEnvironment getReflectionEnvironment();
 
-    /**
-     * Gets the suggestion helper used to manage suggestions and complete command arguments.
-     *
-     * @return Suggestion helper used to manage suggestions and complete command arguments.
-     */
-    CommandSuggestionHelper getSuggestionHelper();
 }
