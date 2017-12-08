@@ -54,63 +54,72 @@ public class ColoredLocalizer implements TextLocalizer {
     }
 
     public static TextComponent fromColor(Color color) {
-        switch (color) {
-            case RED:
+        switch (color.getName()) {
+            case "red":
                 return Text.single(ChatColor.RED.toString());
-            case AQUA:
+            case "aqua":
                 return Text.single(ChatColor.AQUA.toString());
-            case BLACK:
+            case "black":
                 return Text.single(ChatColor.BLACK.toString());
-            case BLUE:
+            case "blue":
                 return Text.single(ChatColor.BLUE.toString());
-            case DARK_AQUA:
+            case "dark_aqua":
                 return Text.single(ChatColor.DARK_AQUA.toString());
-            case DARK_BLUE:
+            case "dark_blue":
                 return Text.single(ChatColor.DARK_BLUE.toString());
-            case DARK_GRAY:
+            case "dark_gray":
                 return Text.single(ChatColor.DARK_GRAY.toString());
-            case DARK_GREEN:
+            case "dark_green":
                 return Text.single(ChatColor.DARK_GREEN.toString());
-            case DARK_PURPLE:
+            case "dark_purple":
                 return Text.single(ChatColor.DARK_PURPLE.toString());
-            case DARK_RED:
+            case "dark_red":
                 return Text.single(ChatColor.DARK_RED.toString());
-            case GOLD:
+            case "gold":
                 return Text.single(ChatColor.GOLD.toString());
-            case GRAY:
+            case "gray":
                 return Text.single(ChatColor.GRAY.toString());
-            case GREEN:
+            case "green":
                 return Text.single(ChatColor.GREEN.toString());
-            case LIGHT_PURPLE:
+            case "light_purple":
                 return Text.single(ChatColor.LIGHT_PURPLE.toString());
-            case WHITE:
+            case "white":
                 return Text.single(ChatColor.WHITE.toString());
-            case YELLOW:
+            case "yellow":
                 return Text.single(ChatColor.YELLOW.toString());
             default:
-                return Text.single("");
+                return Text.single(ChatColor.WHITE.toString());
         }
     }
 
     public static TextComponent fromStyle(Style style) {
+        // None=
+        if (!(style.isBold() || style.isUnderline() || style.isStrikeThrough() || style.isObfuscated() || style.isItalic()))
+            return Text.single(ChatColor.RESET);
 
-        switch (style) {
-            case BOLD:
-                return Text.single(ChatColor.BOLD.toString());
-            case ITALIC:
-                return Text.single(ChatColor.ITALIC.toString());
-            case OBFUSCATED:
-                return Text.single(ChatColor.MAGIC.toString());
-            case RESET:
-                return Text.single(ChatColor.RESET.toString());
-            case STRIKETHROUGH:
-                return Text.single(ChatColor.STRIKETHROUGH.toString());
-            case UNDERLINE:
-                return Text.single(ChatColor.UNDERLINE.toString());
-            default:
-                return Text.single("");
+        TextComponent component = Text.single("");
+
+        if (style.isBold()) {
+            component = component.append(ChatColor.BOLD.toString());
         }
 
+        if (style.isItalic()) {
+            component = component.append(ChatColor.ITALIC.toString());
+        }
+
+        if (style.isObfuscated()) {
+            component = component.append(ChatColor.MAGIC.toString());
+        }
+
+        if (style.isStrikeThrough()) {
+            component = component.append(ChatColor.STRIKETHROUGH.toString());
+        }
+
+        if (style.isUnderline()) {
+            component = component.append(ChatColor.UNDERLINE.toString());
+        }
+
+        return component;
     }
 
     public TextLocalizer getWrapped() {
