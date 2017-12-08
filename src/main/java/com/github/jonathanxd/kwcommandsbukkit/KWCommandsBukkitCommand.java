@@ -46,7 +46,7 @@ import java.util.List;
 
 public class KWCommandsBukkitCommand {
 
-    @CmdJson(type = CmdJsonType.RESOURCE, value = "/main_command.json")
+    @CmdJson(type = CmdJsonType.RESOURCE, value = "/kwbukkit/commands/main_command.json")
     public void kcommands(@Arg("command") Command command,
                           @Info CommandSender sender,
                           @Info CommandManager commandManager) {
@@ -81,12 +81,12 @@ public class KWCommandsBukkitCommand {
         }
     }
 
-    @CmdJson(type = CmdJsonType.RESOURCE, value = "/set_locale_command.json")
+    @CmdJson(type = CmdJsonType.RESOURCE, value = "/kwbukkit/commands/set_locale_command.json")
     public void setlocale(@Arg("locale") Locale locale,
                           @Info CommandSender sender) {
 
         Printer greenPrinter = PrinterUtil.getGreenPrinter(sender);
-        KWCommandsBukkitPlugin.LOCALIZER.setDefaultLocale(locale);
+        KWCommandsBukkitPlugin.LOCALIZER.setLocale(locale);
 
         greenPrinter.printPlain(Texts.I.getLocaleSetText(Text.single(locale.getName())));
         greenPrinter.flush();

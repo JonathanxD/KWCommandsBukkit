@@ -1,0 +1,24 @@
+validator.player=Jogador online
+validator.invalid_player=Jogador não foi encontrado
+
+validator.any_player=Jogador online ou offline
+validator.invalid_any_player=Jogador online ou offline não foi encontrado
+
+validator.plugin=Plugin
+validator.invalid_plugin=Plugin não encontrado
+
+validator.command=Comando
+validator.invalid_command=Comando não encontrado
+
+validator.locale=Local
+validator.invalid_locale=Local não encontrado
+
+message.permission=Você não tem permissão para usar este comando
+message.locale_set=Localização foi definida para $locale
+requirement.permission=Testador de permissão
+
+command.kcommands.description=Exibe ajuda sobre comandos registrados no KWCommands.
+argument.command.description=Comando para ver ajuda sobre.
+
+command.setlocale.description=Define o local/idioma do KWCommands.
+argument.locale.description=Localização/idioma para definir.

@@ -1,12 +1,13 @@
 {
-  "name": "setlocale",
-  "description": "Sets the locale/language of KWCommands",
-  "handler": "method:setlocale",
+  "name": "kcommands",
+  "description": "#command.kcommands.description",
+  "handler": "method:kcommands",
   "arguments": [
     {
-      "name": "locale",
-      "type": "Locale",
-      "description": "Locale to set"
+      "name": "command",
+      "type": "Command",
+      "description": "#argument.command.description",
+      "optional": true
     }
   ],
   "requiredInfo": [
@@ -18,7 +19,7 @@
     {
       "info": { "tags": ["sender"], "type": "Sender" },
       "tester": "com.github.jonathanxd.kwcommandsbukkit.req.PermissionRequirementTest",
-      "data": "kcommands.setlocale"
+      "data": "kcommands.viewcommands"
     }
   ]
 }

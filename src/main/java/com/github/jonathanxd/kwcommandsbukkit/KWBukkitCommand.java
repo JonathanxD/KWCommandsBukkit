@@ -28,9 +28,11 @@
 package com.github.jonathanxd.kwcommandsbukkit;
 
 import com.github.jonathanxd.iutils.object.Either;
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.fail.ParseFail;
 import com.github.jonathanxd.kwcommands.help.HelpInfoHandler;
+import com.github.jonathanxd.kwcommands.information.Information;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.manager.InformationManager;
 import com.github.jonathanxd.kwcommands.manager.InformationManagerImpl;
@@ -139,6 +141,11 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
             PrinterUtil.getGreenPrinter(server.getConsoleSender());
             PrinterUtil.getRedPrinter(server.getConsoleSender());
             this.informationManager.registerInformationProvider(new BukkitInformationProvider(this.server));
+            this.informationManager.registerRecommendations(
+                    this.getService().getCommandManager(),
+                    this.getService().getCommandParser(),
+                    this.getService().getCommandDispatcher()
+            );
         }
 
         @NotNull

@@ -31,14 +31,19 @@ import com.github.jonathanxd.iutils.localization.Locale;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.json.MapTypeResolver;
 
+import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 public class CommonTypes {
 
     public static void register(MapTypeResolver typeResolver) {
+        // Java
         typeResolver.set("String", String.class);
         typeResolver.set("Byte", Byte.class);
         typeResolver.set("Char", Character.class);
@@ -48,13 +53,26 @@ public class CommonTypes {
         typeResolver.set("Float", Float.class);
         typeResolver.set("Double", Double.class);
 
+        // KWCommands
+        typeResolver.set("Command", Command.class);
+        typeResolver.set("Locale", Locale.class);
+
+        // Bukkkit
         typeResolver.set("Sender", CommandSender.class);
         typeResolver.set("CommandSender", CommandSender.class);
         typeResolver.set("Player", Player.class);
         typeResolver.set("Server", Server.class);
         typeResolver.set("Plugin", Plugin.class);
-        typeResolver.set("Command", Command.class);
-        typeResolver.set("Locale", Locale.class);
+
+        // Bukkit other
+        typeResolver.set("Entity", Entity.class);
+        typeResolver.set("EntityType", EntityType.class);
+
+        typeResolver.set("Material", Material.class);
+        typeResolver.set("ItemType", Material.class);
+        typeResolver.set("BlockType", Material.class);
+
+        typeResolver.set("ItemStack", ItemStack.class);
     }
 
 }

@@ -1,13 +1,12 @@
 {
-  "name": "kcommands",
-  "description": "Views help about commands registered in KWCommands manager.",
-  "handler": "method:kcommands",
+  "name": "setlocale",
+  "description": "#command.setlocale.description",
+  "handler": "method:setlocale",
   "arguments": [
     {
-      "name": "command",
-      "type": "Command",
-      "description": "Command to see help about",
-      "optional": true
+      "name": "locale",
+      "type": "Locale",
+      "description": "#argument.locale.description"
     }
   ],
   "requiredInfo": [
@@ -19,7 +18,7 @@
     {
       "info": { "tags": ["sender"], "type": "Sender" },
       "tester": "com.github.jonathanxd.kwcommandsbukkit.req.PermissionRequirementTest",
-      "data": "kcommands.viewcommands"
+      "data": "kcommands.setlocale"
     }
   ]
 }

@@ -29,6 +29,7 @@ package com.github.jonathanxd.kwcommandsbukkit.info;
 
 import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.kwcommands.information.Information;
+import com.github.jonathanxd.kwcommands.manager.CommandManager;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;

@@ -29,6 +29,7 @@ package com.github.jonathanxd.kwcommandsbukkit;
 
 import com.github.jonathanxd.iutils.localization.LocaleManager;
 import com.github.jonathanxd.iutils.reflection.Reflection;
+import com.github.jonathanxd.iutils.text.converter.FastTextLocalizer;
 import com.github.jonathanxd.iutils.text.converter.TextLocalizer;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.completion.Completion;
@@ -51,6 +52,7 @@ import com.github.jonathanxd.kwcommands.util.KLocale;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonArguments;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonTypes;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
+import com.github.jonathanxd.kwcommandsbukkit.text.ColoredLocalizer;
 import com.github.jonathanxd.kwcommandsbukkit.util.CommandMapHelper;
 
 import org.bukkit.Server;
@@ -64,16 +66,17 @@ import java.nio.file.Paths;
 public class KWCommandsBukkitPlugin extends JavaPlugin {
 
     public static final LocaleManager LOCALE_MANAGER = KLocale.INSTANCE.getLocaleManager();
-    public static final TextLocalizer LOCALIZER = KLocale.INSTANCE.getLocalizer();
+    public static final TextLocalizer LOCALIZER = new ColoredLocalizer(KLocale.INSTANCE.getLocalizer());
 
     static {
+        KLocale.INSTANCE.setLocalizer(LOCALIZER);
         KLocale.INSTANCE.getDefaultLocale().load(
-                Paths.get("bukkit/lang/"),
-                "types",
+                Paths.get("kwbukkit/lang/"),
+                null,
                 KWCommandsBukkitPlugin.class.getClassLoader());
         KLocale.INSTANCE.getPtBr().load(
-                Paths.get("bukkit/lang/"),
-                "types",
+                Paths.get("kwbukkit/lang/"),
+                null,
                 KWCommandsBukkitPlugin.class.getClassLoader());
     }
 
@@ -111,13 +114,13 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
         private KWCommandsBukkitServiceImpl(Server server) {
             this.server = server;
             this.commandMap = CommandMapHelper.getSimpleCommandMap(server);
-            this.dispatcher = new KWBukkitCommand.Dispatcher(server, this);
             this.commandManager = new CommandManagerImpl();
             this.commandParser = new CommandParserImpl(this.commandManager);
             this.commandDispatcher = new CommandDispatcherImpl(this.commandManager);
             this.commandProcessor = Processors.createCommonProcessor(this.commandManager, this.commandParser, this.commandDispatcher);
             this.completion = new CompletionImpl(this.commandParser);
             this.reflectionEnvironment = new ReflectionEnvironment(this.commandManager);
+            this.dispatcher = new KWBukkitCommand.Dispatcher(server, this);
 
             // Commons
             CommonArguments.register(server, this.reflectionEnvironment, LOCALE_MANAGER);
