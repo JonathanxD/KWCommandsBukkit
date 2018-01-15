@@ -33,8 +33,8 @@ import com.github.jonathanxd.iutils.text.Color;
 import com.github.jonathanxd.iutils.text.Style;
 import com.github.jonathanxd.iutils.text.Text;
 import com.github.jonathanxd.iutils.text.TextComponent;
-import com.github.jonathanxd.iutils.text.converter.FastTextLocalizer;
-import com.github.jonathanxd.iutils.text.converter.TextLocalizer;
+import com.github.jonathanxd.iutils.text.localizer.FastTextLocalizer;
+import com.github.jonathanxd.iutils.text.localizer.TextLocalizer;
 
 import org.bukkit.ChatColor;
 

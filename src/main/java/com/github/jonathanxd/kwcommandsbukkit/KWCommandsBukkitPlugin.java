@@ -29,8 +29,8 @@ package com.github.jonathanxd.kwcommandsbukkit;
 
 import com.github.jonathanxd.iutils.localization.LocaleManager;
 import com.github.jonathanxd.iutils.reflection.Reflection;
-import com.github.jonathanxd.iutils.text.converter.FastTextLocalizer;
-import com.github.jonathanxd.iutils.text.converter.TextLocalizer;
+import com.github.jonathanxd.iutils.text.localizer.FastTextLocalizer;
+import com.github.jonathanxd.iutils.text.localizer.TextLocalizer;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.completion.Completion;
 import com.github.jonathanxd.kwcommands.completion.CompletionImpl;

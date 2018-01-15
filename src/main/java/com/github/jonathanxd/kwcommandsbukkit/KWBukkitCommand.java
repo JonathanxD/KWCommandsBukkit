@@ -34,8 +34,8 @@ import com.github.jonathanxd.kwcommands.fail.ParseFail;
 import com.github.jonathanxd.kwcommands.help.HelpInfoHandler;
 import com.github.jonathanxd.kwcommands.information.Information;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
-import com.github.jonathanxd.kwcommands.manager.InformationManager;
-import com.github.jonathanxd.kwcommands.manager.InformationManagerImpl;
+import com.github.jonathanxd.kwcommands.information.InformationProviders;
+import com.github.jonathanxd.kwcommands.information.InformationProvidersImpl;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.CommandResult;
 import com.github.jonathanxd.kwcommands.processor.MissingInformationResult;
@@ -87,7 +87,7 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
         return command.getName() + append;
     }
 
-    private Consumer<InformationManager> registerSender(CommandSender sender) {
+    private Consumer<InformationProviders> registerSender(CommandSender sender) {
         return manager -> {
             manager.registerInformation(BukkitInfo.SENDER_ID, sender, "Dispatcher of command.");
 
@@ -132,7 +132,7 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
     static final class Dispatcher {
         private static final HelpInfoHandler handler = new BukkitHelpInfoHandler();
         private final Server server;
-        private final InformationManager informationManager = new InformationManagerImpl();
+        private final InformationProviders informationManager = new InformationProvidersImpl();
         private final KWCommandsBukkitService service;
 
         Dispatcher(Server server, KWCommandsBukkitService service) {
@@ -157,9 +157,9 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
         List<String> complete(String commandString,
                               Plugin owner,
                               CommandSender sender,
-                              Consumer<InformationManager> managerConsumer) {
+                              Consumer<InformationProviders> managerConsumer) {
             try {
-                InformationManager manager = this.informationManager.copy();
+                InformationProviders manager = this.informationManager.copy();
 
                 managerConsumer.accept(manager);
 
@@ -174,9 +174,9 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
         void dispatch(String commandString,
                       Plugin owner,
                       CommandSender sender,
-                      Consumer<InformationManager> managerConsumer) {
+                      Consumer<InformationProviders> managerConsumer) {
             try {
-                InformationManager manager = this.informationManager.copy();
+                InformationProviders manager = this.informationManager.copy();
 
                 managerConsumer.accept(manager);
 

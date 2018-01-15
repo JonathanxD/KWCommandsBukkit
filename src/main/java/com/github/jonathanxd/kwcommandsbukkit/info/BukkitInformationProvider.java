@@ -27,9 +27,10 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit.info;
 
+import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.kwcommands.information.Information;
 import com.github.jonathanxd.kwcommands.information.InformationProvider;
-import com.github.jonathanxd.kwcommands.manager.InformationManager;
+import com.github.jonathanxd.kwcommands.information.InformationProviders;
 import com.github.jonathanxd.kwcommands.util.InfoUtilKt;
 
 import org.bukkit.Server;
@@ -43,16 +44,23 @@ public class BukkitInformationProvider implements InformationProvider {
         this.serverInfo = BukkitInfo.createServerInformation(server);
     }
 
+    @Nullable
+    @Override
+    public <T> Information<T> provide(Information.Id<? extends T> id, InformationProviders providers) {
+        return InformationProvider.DefaultImpls.provide(this, id, providers);
+    }
+
     @SuppressWarnings("unchecked")
     @Nullable
     @Override
-    public <T> Information<T> provide(Information.Id<? extends T> id, InformationManager manager) {
-        if (InfoUtilKt.matches(id, BukkitInfo.SERVER_ID)) {
+    public <T> Information<T> provide(TypeInfo<? extends T> typeInfo,
+                                      String[] tags,
+                                      InformationProviders informationProviders) {
+        if (InfoUtilKt.matches(typeInfo, tags, BukkitInfo.SERVER_ID.getType(), BukkitInfo.SERVER_ID.getTags())) {
             return (Information<T>) this.serverInfo;
         }
 
-        if (id.getType().isAssignableFrom(BukkitInfo.PLUGIN)) {
-            String[] tags = id.getTags();
+        if (typeInfo.isAssignableFrom(BukkitInfo.PLUGIN)) {
             if (tags.length == 0)
                 return null;
 

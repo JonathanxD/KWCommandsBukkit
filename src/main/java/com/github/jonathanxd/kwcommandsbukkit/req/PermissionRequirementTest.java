@@ -50,8 +50,7 @@ public class PermissionRequirementTest implements RequirementTester<Permissible,
     }
 
     @Override
-    public boolean test(Requirement<Permissible, String> requirement, Information<? extends Permissible> information) {
-        return information.getValue().hasPermission(requirement.getRequired());
+    public boolean test(Requirement<Permissible, String> requirement, Permissible permissible) {
+        return permissible != null && permissible.hasPermission(requirement.getRequired());
     }
-
 }
