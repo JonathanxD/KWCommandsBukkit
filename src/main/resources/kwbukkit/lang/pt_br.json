@@ -1,0 +1,27 @@
+{
+    "message": {
+        "permission": "Você não tem permissão para usar este comando!",
+        "locale_set": "Localização definida para $locale"
+    },
+    "requirement": {
+        "permission": "Testador de permissões"
+    },
+    "command": {
+        "kcommands": {
+            "description": "Mostra ajuda sobre os comandos registrados no KWCommands.",
+            "argument": {
+                "command": {
+                    "description": "Comando para ver a ajuda sobre."
+                }
+            }
+        },
+        "setlocale": {
+            "description": "Define a localização/idioma do KWCommands",
+            "argument": {
+                "locale": {
+                    "description": "Localização para definir."
+                }
+            }
+        }
+    }
+}

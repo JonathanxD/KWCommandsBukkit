@@ -6,7 +6,7 @@
     {
       "name": "command",
       "type": "Command",
-      "description": "#argument.command.description",
+      "description": "#command.kcommands.argument.command.description",
       "optional": true
     }
   ],

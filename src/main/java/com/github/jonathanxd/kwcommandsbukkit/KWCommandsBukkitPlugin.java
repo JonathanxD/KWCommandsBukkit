@@ -27,7 +27,9 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit;
 
+import com.github.jonathanxd.iutils.localization.LocaleLoader;
 import com.github.jonathanxd.iutils.localization.LocaleManager;
+import com.github.jonathanxd.iutils.localization.json.JsonLocaleLoader;
 import com.github.jonathanxd.iutils.reflection.Reflection;
 import com.github.jonathanxd.iutils.text.localizer.FastTextLocalizer;
 import com.github.jonathanxd.iutils.text.localizer.TextLocalizer;
@@ -70,11 +72,14 @@ public class KWCommandsBukkitPlugin extends JavaPlugin {
 
     static {
         KLocale.INSTANCE.setLocalizer(LOCALIZER);
-        KLocale.INSTANCE.getDefaultLocale().load(
+        LocaleLoader localeLoader = JsonLocaleLoader.JSON_LOCALE_LOADER;
+
+        localeLoader.loadFromResource(KLocale.INSTANCE.getDefaultLocale(),
                 Paths.get("kwbukkit/lang/"),
                 null,
                 KWCommandsBukkitPlugin.class.getClassLoader());
-        KLocale.INSTANCE.getPtBr().load(
+
+        localeLoader.loadFromResource(KLocale.INSTANCE.getPtBr(),
                 Paths.get("kwbukkit/lang/"),
                 null,
                 KWCommandsBukkitPlugin.class.getClassLoader());

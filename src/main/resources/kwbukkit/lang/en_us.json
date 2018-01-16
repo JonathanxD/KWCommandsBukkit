@@ -1,0 +1,27 @@
+{
+    "message": {
+        "permission": "You don't have the permission to run this command!",
+        "locale_set": "Locale was set to $locale"
+    },
+    "requirement": {
+        "permission": "Permission tester"
+    },
+    "command": {
+        "kcommands": {
+            "description": "Shows help about commands registered in KWCommands manager.",
+            "argument": {
+                "command": {
+                    "description": "Command to view help about."
+                }
+            }
+        },
+        "setlocale": {
+            "description": "Sets the locale/language of KWCommands",
+            "argument": {
+                "locale": {
+                    "description": "Locale to set."
+                }
+            }
+        }
+    }
+}

@@ -35,41 +35,6 @@ import com.github.jonathanxd.iutils.text.dynamic.Section;
 public interface Texts {
     Texts I = DynamicGenerator.generate(Texts.class);
 
-    // Player
-    @Section({"validator", "player"})
-    TextComponent getPlayerValidatorText();
-
-    @Section({"type", "invalid_player"})
-    TextComponent getInvalidPlayerText();
-
-    // Any player
-    @Section({"validator", "any_player"})
-    TextComponent getAnyPlayerValidatorText();
-
-    @Section({"validator", "invalid_any_player"})
-    TextComponent getInvalidAnyPlayerText();
-
-    // Plugin
-    @Section({"validator", "plugin"})
-    TextComponent getPluginValidatorText();
-
-    @Section({"type", "invalid_plugin"})
-    TextComponent getInvalidPluginText();
-
-    // Command
-    @Section({"validator", "command"})
-    TextComponent getCommandValidatorText();
-
-    @Section({"type", "invalid_command"})
-    TextComponent getInvalidCommandText();
-
-    // Locale
-    @Section({"validator", "locale"})
-    TextComponent getLocaleValidatorText();
-
-    @Section({"type", "invalid_locale"})
-    TextComponent getInvalidLocaleText();
-
     @Section({"message", "permission"})
     TextComponent getPermissionText();
 
@@ -78,4 +43,16 @@ public interface Texts {
 
     @Section({"requirement", "permission"})
     TextComponent getRequirementPermissionText();
+
+    @Section({"command", "kcommands", "description"})
+    TextComponent getKCommandsDescriptionText();
+
+    @Section({"command", "kcommands", "argument", "command", "description"})
+    TextComponent getKCommandsCommandDescriptionText();
+
+    @Section({"command", "setlocale", "description"})
+    TextComponent getSetLocaleDescriptionText();
+
+    @Section({"command", "setlocale", "argument", "locale", "description"})
+    TextComponent getKCommandsLocaleDescriptionText();
 }

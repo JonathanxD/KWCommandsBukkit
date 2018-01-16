@@ -6,7 +6,7 @@
     {
       "name": "locale",
       "type": "Locale",
-      "description": "#argument.locale.description"
+      "description": "#command.kcommands.argument.locale.description"
     }
   ],
   "requiredInfo": [
