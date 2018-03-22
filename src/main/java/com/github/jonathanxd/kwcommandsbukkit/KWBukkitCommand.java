@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2017 JonathanxD <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2018 JonathanxD <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -69,8 +69,8 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
 
     KWBukkitCommand(Plugin plugin, Command command, Dispatcher dispatcher) {
         super(command.getName(),
-                KWCommandsBukkitPlugin.LOCALIZER.localize(command.getDescription()),
-                KWCommandsBukkitPlugin.LOCALIZER.localize(command.getDescription()),
+                KWCommandsBukkit.LOCALIZER.localize(command.getDescription()),
+                KWCommandsBukkit.LOCALIZER.localize(command.getDescription()),
                 command.getAlias());
         this.plugin = plugin;
         this.command = command;

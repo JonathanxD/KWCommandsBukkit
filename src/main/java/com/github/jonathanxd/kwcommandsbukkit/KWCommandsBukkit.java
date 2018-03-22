@@ -27,32 +27,33 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit;
 
-import com.github.jonathanxd.iutils.annotation.Named;
-import com.github.jonathanxd.iutils.text.TextComponent;
-import com.github.jonathanxd.iutils.text.dynamic.DynamicGenerator;
-import com.github.jonathanxd.iutils.text.dynamic.Section;
+import com.github.jonathanxd.iutils.localization.LocaleLoader;
+import com.github.jonathanxd.iutils.localization.LocaleManager;
+import com.github.jonathanxd.iutils.localization.json.JsonLocaleLoader;
+import com.github.jonathanxd.iutils.text.localizer.TextLocalizer;
+import com.github.jonathanxd.kwcommands.util.KLocale;
+import com.github.jonathanxd.kwcommandsbukkit.text.ColoredLocalizer;
 
-public interface Texts {
-    Texts I = DynamicGenerator.generate(Texts.class);
+import java.nio.file.Paths;
 
-    @Section({"message", "permission"})
-    TextComponent getPermissionText();
+public class KWCommandsBukkit {
 
-    @Section({"message", "locale_set"})
-    TextComponent getLocaleSetText(@Named("locale") TextComponent locale);
+    public static final LocaleManager LOCALE_MANAGER = KLocale.INSTANCE.getLocaleManager();
+    public static final TextLocalizer LOCALIZER = new ColoredLocalizer(
+            KLocale.INSTANCE.getLocalizer());
 
-    @Section({"requirement", "permission"})
-    TextComponent getRequirementPermissionText();
+    static {
+        KLocale.INSTANCE.setLocalizer(LOCALIZER);
+        LocaleLoader localeLoader = JsonLocaleLoader.JSON_LOCALE_LOADER;
 
-    @Section({"command", "kcommands", "description"})
-    TextComponent getKCommandsDescriptionText();
+        localeLoader.loadFromResource(KLocale.INSTANCE.getDefaultLocale(),
+                Paths.get("kwbukkit/lang/"),
+                null,
+                KWCommandsBukkitPlugin.class.getClassLoader());
 
-    @Section({"command", "kcommands", "argument", "command", "description"})
-    TextComponent getKCommandsCommandDescriptionText();
-
-    @Section({"command", "setlocale", "description"})
-    TextComponent getSetLocaleDescriptionText();
-
-    @Section({"command", "setlocale", "argument", "locale", "description"})
-    TextComponent getKCommandsLocaleDescriptionText();
+        localeLoader.loadFromResource(KLocale.INSTANCE.getPtBr(),
+                Paths.get("kwbukkit/lang/"),
+                null,
+                KWCommandsBukkitPlugin.class.getClassLoader());
+    }
 }

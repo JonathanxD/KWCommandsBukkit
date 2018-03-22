@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2017 JonathanxD <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2018 JonathanxD <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -86,7 +86,7 @@ public class KWCommandsBukkitCommand {
                           @Info CommandSender sender) {
 
         Printer greenPrinter = PrinterUtil.getGreenPrinter(sender);
-        KWCommandsBukkitPlugin.LOCALIZER.setLocale(locale);
+        KWCommandsBukkit.LOCALIZER.setLocale(locale);
 
         greenPrinter.printPlain(Texts.I.getLocaleSetText(Text.single(locale.getName())));
         greenPrinter.flush();

@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2017 JonathanxD <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2018 JonathanxD <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -27,11 +27,7 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit;
 
-import com.github.jonathanxd.iutils.localization.LocaleLoader;
-import com.github.jonathanxd.iutils.localization.LocaleManager;
-import com.github.jonathanxd.iutils.localization.json.JsonLocaleLoader;
 import com.github.jonathanxd.iutils.reflection.Reflection;
-import com.github.jonathanxd.iutils.text.localizer.TextLocalizer;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.completion.Completion;
 import com.github.jonathanxd.kwcommands.completion.CompletionImpl;
@@ -49,11 +45,9 @@ import com.github.jonathanxd.kwcommands.parser.CommandParserImpl;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.Processors;
 import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
-import com.github.jonathanxd.kwcommands.util.KLocale;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonArguments;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonTypes;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
-import com.github.jonathanxd.kwcommandsbukkit.text.ColoredLocalizer;
 import com.github.jonathanxd.kwcommandsbukkit.util.CommandMapHelper;
 
 import org.bukkit.Server;
@@ -61,28 +55,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 
-import java.nio.file.Paths;
-
 public class KWCommandsBukkitInit {
-
-    public static final LocaleManager LOCALE_MANAGER = KLocale.INSTANCE.getLocaleManager();
-    public static final TextLocalizer LOCALIZER = new ColoredLocalizer(
-            KLocale.INSTANCE.getLocalizer());
-
-    static {
-        KLocale.INSTANCE.setLocalizer(LOCALIZER);
-        LocaleLoader localeLoader = JsonLocaleLoader.JSON_LOCALE_LOADER;
-
-        localeLoader.loadFromResource(KLocale.INSTANCE.getDefaultLocale(),
-                Paths.get("kwbukkit/lang/"),
-                null,
-                KWCommandsBukkitPlugin.class.getClassLoader());
-
-        localeLoader.loadFromResource(KLocale.INSTANCE.getPtBr(),
-                Paths.get("kwbukkit/lang/"),
-                null,
-                KWCommandsBukkitPlugin.class.getClassLoader());
-    }
 
     public static void init(Plugin plugin) {
         plugin.getLogger().info("Initializing KWCommandsBukkit...");
@@ -129,7 +102,8 @@ public class KWCommandsBukkitInit {
             this.dispatcher = new KWBukkitCommand.Dispatcher(server, this);
 
             // Commons
-            CommonArguments.register(server, this.reflectionEnvironment, LOCALE_MANAGER);
+            CommonArguments.register(server, this.reflectionEnvironment,
+                    KWCommandsBukkit.LOCALE_MANAGER);
             TypeResolverKt.registerDefaults(this.typeResolver);
             CommonTypes.register(this.typeResolver);
         }

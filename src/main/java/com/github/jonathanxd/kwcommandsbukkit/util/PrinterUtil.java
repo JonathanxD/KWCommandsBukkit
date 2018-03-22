@@ -3,7 +3,7 @@
  *
  *         The MIT License (MIT)
  *
- *      Copyright (c) 2017 JonathanxD <jonathan.scripter@programmer.net>
+ *      Copyright (c) 2018 JonathanxD <jonathan.scripter@programmer.net>
  *      Copyright (c) contributors
  *
  *
@@ -29,6 +29,7 @@ package com.github.jonathanxd.kwcommandsbukkit.util;
 
 import com.github.jonathanxd.kwcommands.printer.CommonPrinter;
 import com.github.jonathanxd.kwcommands.printer.Printer;
+import com.github.jonathanxd.kwcommandsbukkit.KWCommandsBukkit;
 import com.github.jonathanxd.kwcommandsbukkit.KWCommandsBukkitPlugin;
 
 import org.bukkit.ChatColor;
@@ -71,7 +72,7 @@ public class PrinterUtil {
     }
 
     private static Printer getPrinter(CommandSender sender, ChatColor color) {
-        return new CommonPrinter(KWCommandsBukkitPlugin.LOCALIZER, f -> {
+        return new CommonPrinter(KWCommandsBukkit.LOCALIZER, f -> {
             sender.sendMessage(color.toString() + f);
             return Unit.INSTANCE;
         }, false);
