@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'com.github.jonathanxd'
-version '1.1.13-SNAPSHOT'
+version '1.1.14-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'license'
@@ -50,10 +50,7 @@ artifacts {
 }
 
 dependencies {
-    ext.iutils_version = '4.15.5'
-
-    compile 'com.github.JonathanxD:KWCommands:1.6.7'
-    compile "com.github.JonathanxD.JwIUtils:JwIUtils:$iutils_version"
+    compile 'com.github.JonathanxD:KWCommands:1.6.8'
     compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
@@ -63,6 +60,7 @@ shadowJar {
         include(dependency("com.github.JonathanxD:JwIUtils"))
         include(dependency("com.github.JonathanxD.JwIUtils:JwIUtils"))
         include(dependency("com.github.JonathanxD.JwIUtils:jwiutils-kt"))
+        include(dependency("com.github.JonathanxD.JwIUtils:specializations"))
         include(dependency("com.github.JonathanxD.JwIUtils:properties"))
         include(dependency("com.github.JonathanxD.JwIUtils:json-lang-loader"))
         include(dependency("com.github.JonathanxD:KWCommands"))

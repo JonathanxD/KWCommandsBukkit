@@ -28,6 +28,7 @@
 package com.github.jonathanxd.kwcommandsbukkit;
 
 import com.github.jonathanxd.iutils.localization.Locale;
+import com.github.jonathanxd.iutils.text.Colors;
 import com.github.jonathanxd.iutils.text.Text;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.json.CmdJson;
@@ -36,6 +37,7 @@ import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.printer.Printer;
 import com.github.jonathanxd.kwcommands.reflect.annotation.Arg;
 import com.github.jonathanxd.kwcommands.reflect.annotation.Info;
+import com.github.jonathanxd.kwcommandsbukkit.text.LocalizedSender;
 import com.github.jonathanxd.kwcommandsbukkit.util.PrinterUtil;
 
 import org.bukkit.ChatColor;
@@ -49,13 +51,13 @@ public class KWCommandsBukkitCommand {
     @CmdJson(type = CmdJsonType.RESOURCE, value = "/kwbukkit/commands/main_command.json")
     public void kcommands(@Arg("command") Command command,
                           @Info CommandSender sender,
-                          @Info CommandManager commandManager) {
+                          @Info CommandManager commandManager,
+                          @Info LocalizedSender lSender) {
 
         if (command != null) {
-            Printer greenPrinter = PrinterUtil.getGreenPrinter(sender);
-            greenPrinter.printFromRoot(command, 0);
+            lSender.printCommand(command, 0);
 
-            greenPrinter.flush();
+            lSender.flush();
 
         } else {
 
@@ -69,13 +71,13 @@ public class KWCommandsBukkitCommand {
 
             while (iterator.hasNext()) {
                 Command ncommand = iterator.next();
-                Printer greenPrinter = PrinterUtil.getGreenPrinter(sender);
-                greenPrinter.printFromRoot(ncommand, 0);
+
+                lSender.printFromRoot(ncommand, 0);
 
                 if (iterator.hasNext())
-                    greenPrinter.printPlain(Text.single("------------------------------------"));
+                    lSender.printPlain(Text.single("------------------------------------"));
 
-                greenPrinter.flush();
+                lSender.flush();
 
             }
         }
@@ -83,12 +85,11 @@ public class KWCommandsBukkitCommand {
 
     @CmdJson(type = CmdJsonType.RESOURCE, value = "/kwbukkit/commands/set_locale_command.json")
     public void setlocale(@Arg("locale") Locale locale,
-                          @Info CommandSender sender) {
-
-        Printer greenPrinter = PrinterUtil.getGreenPrinter(sender);
+                          @Info CommandSender sender,
+                          @Info LocalizedSender lSender) {
         KWCommandsBukkit.LOCALIZER.setLocale(locale);
 
-        greenPrinter.printPlain(Texts.I.getLocaleSetText(Text.single(locale.getName())));
-        greenPrinter.flush();
+        lSender.printPlain(Colors.GREEN.append(Texts.I.getLocaleSetText(Text.single(locale.getName()))));
+        lSender.flush();
     }
 }

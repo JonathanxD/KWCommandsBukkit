@@ -25,34 +25,34 @@
  *      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *      THE SOFTWARE.
  */
-package com.github.jonathanxd.kwcommandsbukkit.util;
+package com.github.jonathanxd.kwcommandsbukkit.service;
 
-import com.github.jonathanxd.iutils.text.Color;
-import com.github.jonathanxd.iutils.text.localizer.Localizer;
-import com.github.jonathanxd.kwcommands.printer.CommonPrinter;
-import com.github.jonathanxd.kwcommands.printer.Printer;
+import com.github.jonathanxd.iutils.localization.Locale;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
-import kotlin.Unit;
+import java.util.List;
+import java.util.Optional;
 
-public class PrinterUtil {
+public final class LocaleProviders implements LocaleProvider {
 
-    public static Printer getPrinter(Printer printer, Color color) {
-        return new CommonPrinter(printer.getLocalizer(), f -> {
-            printer.printPlain(color.append(f));
-            printer.flush();
-            return Unit.INSTANCE;
-        }, false);
+    private final List<LocaleProvider> providers;
+
+    public LocaleProviders(List<LocaleProvider> providers) {
+        this.providers = providers;
     }
 
-    public static Printer getPrinter(CommandSender sender,
-                                     Localizer localizer) {
-        return new CommonPrinter(localizer, f -> {
-            sender.sendMessage(f);
-            return Unit.INSTANCE;
-        }, false);
+    @NotNull
+    @Override
+    public Optional<Locale> provide(@NotNull CommandSender sender) {
+        for (LocaleProvider provider : this.providers) {
+            Optional<Locale> provide = provider.provide(sender);
+
+            if (provide.isPresent())
+                return provide;
+        }
+
+        return Optional.empty();
     }
-
-
 }

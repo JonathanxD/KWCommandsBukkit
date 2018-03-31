@@ -25,34 +25,24 @@
  *      OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  *      THE SOFTWARE.
  */
-package com.github.jonathanxd.kwcommandsbukkit.util;
+package com.github.jonathanxd.kwcommandsbukkit.service;
 
-import com.github.jonathanxd.iutils.text.Color;
-import com.github.jonathanxd.iutils.text.localizer.Localizer;
-import com.github.jonathanxd.kwcommands.printer.CommonPrinter;
-import com.github.jonathanxd.kwcommands.printer.Printer;
+import com.github.jonathanxd.iutils.localization.Locale;
 
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
-import kotlin.Unit;
+import java.util.Optional;
 
-public class PrinterUtil {
-
-    public static Printer getPrinter(Printer printer, Color color) {
-        return new CommonPrinter(printer.getLocalizer(), f -> {
-            printer.printPlain(color.append(f));
-            printer.flush();
-            return Unit.INSTANCE;
-        }, false);
-    }
-
-    public static Printer getPrinter(CommandSender sender,
-                                     Localizer localizer) {
-        return new CommonPrinter(localizer, f -> {
-            sender.sendMessage(f);
-            return Unit.INSTANCE;
-        }, false);
-    }
-
-
+@FunctionalInterface
+public interface LocaleProvider {
+    /**
+     * Provides locale of {@code sender}. This overrides default localization but does not override
+     * localization defined with {@link com.github.jonathanxd.kwcommandsbukkit.text.SenderLocalizer#setLocale(Locale)}.
+     *
+     * @param sender Sender.
+     * @return Locale of {@code sender}.
+     */
+    @NotNull
+    Optional<Locale> provide(@NotNull CommandSender sender);
 }

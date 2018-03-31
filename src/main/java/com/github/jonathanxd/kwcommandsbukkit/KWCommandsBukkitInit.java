@@ -45,15 +45,26 @@ import com.github.jonathanxd.kwcommands.parser.CommandParserImpl;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.Processors;
 import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
+import com.github.jonathanxd.kwcommands.util.KLocale;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonArguments;
 import com.github.jonathanxd.kwcommandsbukkit.common.CommonTypes;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
+import com.github.jonathanxd.kwcommandsbukkit.service.LocaleProvider;
+import com.github.jonathanxd.kwcommandsbukkit.service.LocaleProviders;
+import com.github.jonathanxd.kwcommandsbukkit.text.LocalizedSender;
+import com.github.jonathanxd.kwcommandsbukkit.text.SenderLocalizer;
 import com.github.jonathanxd.kwcommandsbukkit.util.CommandMapHelper;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 public class KWCommandsBukkitInit {
 
@@ -61,22 +72,24 @@ public class KWCommandsBukkitInit {
         plugin.getLogger().info("Initializing KWCommandsBukkit...");
 
         plugin.getServer().getServicesManager()
-                .register(KWCommandsBukkitService.class,
-                        new KWCommandsBukkitServiceImpl(plugin.getServer()),
-                        plugin,
-                        ServicePriority.Normal);
+              .register(KWCommandsBukkitService.class,
+                      new KWCommandsBukkitServiceImpl(plugin.getServer()),
+                      plugin,
+                      ServicePriority.Normal);
 
 
         plugin.getLogger().info("KWCommandsBukkit initialized!");
 
         KWCommandsBukkitService service = plugin.getServer()
-                .getServicesManager()
-                .load(KWCommandsBukkitService.class);
+                                                .getServicesManager()
+                                                .load(KWCommandsBukkitService.class);
 
         service.registerCommands(new KWCommandsBukkitCommand(), plugin);
     }
 
     private final static class KWCommandsBukkitServiceImpl implements KWCommandsBukkitService {
+        private final Map<CommandSender, LocalizedSender> cache = new WeakHashMap<>();
+
         private final Server server;
         private final CommandMap commandMap;
         private final KWBukkitCommand.Dispatcher dispatcher;
@@ -88,6 +101,8 @@ public class KWCommandsBukkitInit {
         private final ReflectionEnvironment reflectionEnvironment;
         private final MapTypeResolver typeResolver = new MapTypeResolver();
         private final JsonCommandParser parser = new DefaultJsonParser(typeResolver);
+        private final List<LocaleProvider> providerList = new ArrayList<>();
+        private final LocaleProvider provider = new LocaleProviders(this.providerList);
 
         private KWCommandsBukkitServiceImpl(Server server) {
             this.server = server;
@@ -156,6 +171,30 @@ public class KWCommandsBukkitInit {
                 Object owner = ((KWBukkitCommand) bukkit).getPlugin();
                 this.getCommandManager().unregisterCommand(command, owner);
             }
+        }
+
+        @Override
+        public LocalizedSender getLocalizedSender(CommandSender sender) {
+            return this.cache.computeIfAbsent(sender, sender1 ->
+                    new LocalizedSender(sender1,
+                            new SenderLocalizer(sender1, KLocale.INSTANCE.getLocalizer(),
+                                    provider)));
+        }
+
+        @Override
+        public void registerLocalizerProvider(LocaleProvider provider) {
+            if (!this.providerList.contains(provider))
+                this.providerList.add(provider);
+        }
+
+        @Override
+        public boolean unregisterLocalizerProvider(LocaleProvider provider) {
+            return this.providerList.remove(provider);
+        }
+
+        @Override
+        public LocaleProvider getLocalizerProvider() {
+            return this.provider;
         }
 
         @Override

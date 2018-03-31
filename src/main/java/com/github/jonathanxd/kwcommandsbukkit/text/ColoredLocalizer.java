@@ -37,6 +37,8 @@ import com.github.jonathanxd.iutils.text.localizer.FastTextLocalizer;
 import com.github.jonathanxd.iutils.text.localizer.TextLocalizer;
 
 import org.bukkit.ChatColor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -44,7 +46,7 @@ public class ColoredLocalizer implements TextLocalizer {
 
     private final TextLocalizer def;
 
-    public ColoredLocalizer(TextLocalizer def) {
+    public ColoredLocalizer(@NotNull TextLocalizer def) {
         this.def = new FastTextLocalizer(
                 def.getLocaleManager(),
                 def.getDefaultLocale(),
@@ -53,7 +55,8 @@ public class ColoredLocalizer implements TextLocalizer {
                 ColoredLocalizer::fromStyle);
     }
 
-    public static TextComponent fromColor(Color color) {
+    @NotNull
+    public static TextComponent fromColor(@NotNull Color color) {
         switch (color.getName()) {
             case "red":
                 return Text.single(ChatColor.RED.toString());
@@ -92,9 +95,11 @@ public class ColoredLocalizer implements TextLocalizer {
         }
     }
 
-    public static TextComponent fromStyle(Style style) {
+    @NotNull
+    public static TextComponent fromStyle(@NotNull Style style) {
         // None=
-        if (!(style.isBold() || style.isUnderline() || style.isStrikeThrough() || style.isObfuscated() || style.isItalic()))
+        if (!(style.isBold() || style.isUnderline() || style.isStrikeThrough() || style
+                .isObfuscated() || style.isItalic()))
             return Text.single(ChatColor.RESET);
 
         TextComponent component = Text.single("");
@@ -122,52 +127,63 @@ public class ColoredLocalizer implements TextLocalizer {
         return component;
     }
 
+    @NotNull
     public TextLocalizer getWrapped() {
         return this.def;
     }
 
+    @NotNull
     @Override
-    public String localize(TextComponent textComponent) {
+    public String localize(@NotNull TextComponent textComponent) {
         return this.getWrapped().localize(textComponent);
     }
 
+    @NotNull
     @Override
-    public String localize(TextComponent textComponent, Map<String, TextComponent> args) {
+    public String localize(@NotNull TextComponent textComponent, @NotNull Map<String, TextComponent> args) {
         return this.getWrapped().localize(textComponent, args);
     }
 
+    @NotNull
     @Override
-    public String localize(TextComponent textComponent, Locale locale) {
+    public String localize(@NotNull TextComponent textComponent, @Nullable Locale locale) {
         return this.getWrapped().localize(textComponent, locale);
     }
 
+    @NotNull
     @Override
-    public String localize(TextComponent textComponent, Map<String, TextComponent> args, Locale locale) {
+    public String localize(@NotNull TextComponent textComponent,
+                           @NotNull Map<String, TextComponent> args, @Nullable Locale locale) {
         return this.getWrapped().localize(textComponent, args, locale);
     }
 
+    @NotNull
     @Override
     public LocaleManager getLocaleManager() {
         return this.getWrapped().getLocaleManager();
     }
 
+    @NotNull
     @Override
     public Locale getDefaultLocale() {
         return this.getWrapped().getDefaultLocale();
     }
 
+    @NotNull
     @Override
-    public Locale setDefaultLocale(Locale locale) {
+    public Locale setDefaultLocale(@NotNull Locale locale) {
         return this.getWrapped().setDefaultLocale(locale);
     }
 
+    @NotNull
     @Override
     public Locale getLocale() {
         return this.getWrapped().getLocale();
     }
 
+    @NotNull
     @Override
-    public Locale setLocale(Locale locale) {
+    public Locale setLocale(@NotNull Locale locale) {
         return this.getWrapped().setLocale(locale);
     }
 }

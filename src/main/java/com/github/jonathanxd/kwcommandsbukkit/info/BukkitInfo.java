@@ -30,6 +30,7 @@ package com.github.jonathanxd.kwcommandsbukkit.info;
 import com.github.jonathanxd.iutils.type.TypeInfo;
 import com.github.jonathanxd.kwcommands.information.Information;
 import com.github.jonathanxd.kwcommands.manager.CommandManager;
+import com.github.jonathanxd.kwcommandsbukkit.text.LocalizedSender;
 
 import org.bukkit.Server;
 import org.bukkit.command.CommandSender;
@@ -56,6 +57,11 @@ public class BukkitInfo {
     public static final TypeInfo<CommandSender> SENDER = TypeInfo.of(CommandSender.class);
     public static final String SENDER_LITER = "org.bukkit.command.CommandSender";
     public static final Information.Id<CommandSender> SENDER_ID = new Information.Id<>(SENDER, new String[] { "sender" });
+
+    public static final TypeInfo<LocalizedSender> LOCALIZED_SENDER = TypeInfo.of(LocalizedSender.class);
+    public static final String LOCALIZED_SENDER_LITER = "com.github.jonathanxd.kwcommandsbukkit.text.LocalizedSender";
+    public static final Information.Id<LocalizedSender> LOCALIZED_SENDER_ID =
+            new Information.Id<>(LOCALIZED_SENDER, new String[] { "localized_sender" });
 
     public static Information<Server> createServerInformation(Server server) {
         return new Information<>(SERVER_ID, server, "Current minecraft server");

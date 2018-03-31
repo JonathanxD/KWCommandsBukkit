@@ -28,14 +28,14 @@
 package com.github.jonathanxd.kwcommandsbukkit;
 
 import com.github.jonathanxd.iutils.object.Either;
-import com.github.jonathanxd.iutils.type.TypeInfo;
+import com.github.jonathanxd.iutils.text.Colors;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.fail.ParseFail;
 import com.github.jonathanxd.kwcommands.help.HelpInfoHandler;
-import com.github.jonathanxd.kwcommands.information.Information;
-import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.information.InformationProviders;
 import com.github.jonathanxd.kwcommands.information.InformationProvidersImpl;
+import com.github.jonathanxd.kwcommands.manager.CommandManager;
+import com.github.jonathanxd.kwcommands.printer.Printer;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.processor.CommandResult;
 import com.github.jonathanxd.kwcommands.processor.MissingInformationResult;
@@ -44,6 +44,7 @@ import com.github.jonathanxd.kwcommandsbukkit.info.BukkitHelpInfoHandler;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitInfo;
 import com.github.jonathanxd.kwcommandsbukkit.info.BukkitInformationProvider;
 import com.github.jonathanxd.kwcommandsbukkit.service.KWCommandsBukkitService;
+import com.github.jonathanxd.kwcommandsbukkit.text.LocalizedSender;
 import com.github.jonathanxd.kwcommandsbukkit.util.PrinterUtil;
 
 import org.bukkit.ChatColor;
@@ -83,13 +84,17 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
     }
 
     private String getCommandsString(String[] args) {
-        String append = args.length == 0 ? "" : " " + Arrays.stream(args).collect(Collectors.joining(" "));
+        String append = args.length == 0 ? "" : " " + Arrays.stream(args)
+                                                            .collect(Collectors.joining(" "));
         return command.getName() + append;
     }
 
     private Consumer<InformationProviders> registerSender(CommandSender sender) {
         return manager -> {
             manager.registerInformation(BukkitInfo.SENDER_ID, sender, "Dispatcher of command.");
+            manager.registerInformation(BukkitInfo.LOCALIZED_SENDER_ID,
+                    this.dispatcher.getService().getLocalizedSender(sender),
+                    "Localized dispatcher of command.");
 
             if (sender instanceof Player) {
                 manager.registerInformation(BukkitInfo.PLAYER_ID, sender, "Dispatcher of command.");
@@ -109,15 +114,18 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
             return false;
         }
 
-        this.dispatcher.dispatch(commandString, this.getPlugin(), sender, this.registerSender(sender));
+        this.dispatcher
+                .dispatch(commandString, this.getPlugin(), sender, this.registerSender(sender));
 
         return true;
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+    public List<String> tabComplete(CommandSender sender, String alias,
+                                    String[] args) throws IllegalArgumentException {
         String commandString = this.getCommandsString(args);
-        List<String> complete = this.dispatcher.complete(commandString, this.getPlugin(), sender, this.registerSender(sender));
+        List<String> complete = this.dispatcher
+                .complete(commandString, this.getPlugin(), sender, this.registerSender(sender));
 
         if (complete.size() == 1 && complete.get(0).equals(" "))
             return super.tabComplete(sender, alias, args);
@@ -135,12 +143,12 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
         private final InformationProviders informationManager = new InformationProvidersImpl();
         private final KWCommandsBukkitService service;
 
+
         Dispatcher(Server server, KWCommandsBukkitService service) {
             this.server = server;
             this.service = service;
-            PrinterUtil.getGreenPrinter(server.getConsoleSender());
-            PrinterUtil.getRedPrinter(server.getConsoleSender());
-            this.informationManager.registerInformationProvider(new BukkitInformationProvider(this.server));
+            this.informationManager
+                    .registerInformationProvider(new BukkitInformationProvider(this.server));
             this.informationManager.registerRecommendations(
                     this.getService().getCommandManager(),
                     this.getService().getCommandParser(),
@@ -159,13 +167,17 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
                               CommandSender sender,
                               Consumer<InformationProviders> managerConsumer) {
             try {
+                LocalizedSender localizedSender = this.service.getLocalizedSender(sender);
                 InformationProviders manager = this.informationManager.copy();
 
                 managerConsumer.accept(manager);
 
-                return this.getService().getCompletion().complete(commandString, owner, manager);
+                return this.getService()
+                           .getCompletion()
+                           .complete(commandString, owner, manager, localizedSender.getLocalizer());
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.RED + "Exception during command completion, report to developer (include the server log)");
+                sender.sendMessage(
+                        ChatColor.RED + "Exception during command completion, report to developer (include the server log)");
                 e.printStackTrace();
                 return Collections.emptyList();
             }
@@ -176,30 +188,35 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
                       CommandSender sender,
                       Consumer<InformationProviders> managerConsumer) {
             try {
+                LocalizedSender localizedSender = this.service.getLocalizedSender(sender);
+                Printer redPrinter = PrinterUtil.getPrinter(localizedSender, Colors.RED);
+
                 InformationProviders manager = this.informationManager.copy();
 
                 managerConsumer.accept(manager);
 
-                Either<ParseFail, List<CommandResult>> result = this.getCommandProcessor()
-                        .parseAndDispatch(commandString, owner, manager);
+                Either<ParseFail, List<CommandResult>> result =
+                        this.getCommandProcessor().parseAndDispatch(commandString, owner, manager,
+                                localizedSender.getLocalizer());
 
                 if (result.isLeft()) {
-                    this.getHandler().handleFail(result.getLeft(), PrinterUtil.getRedPrinter(sender));
-                    return/* false*/;
+                    this.getHandler().handleFail(result.getLeft(),
+                            redPrinter);
+                } else {
+                    List<CommandResult> commandResults = result.getRight();
+
+                    if (CollectionsKt.any(commandResults, Dispatcher::isError)) {
+                        this.getHandler()
+                            .handleResults(commandResults,
+                                    redPrinter
+                            );
+                    }
                 }
 
-                List<CommandResult> commandResults = result.getRight();
-
-                if (CollectionsKt.any(commandResults, Dispatcher::isError)) {
-                    this.getHandler().handleResults(commandResults, PrinterUtil.getRedPrinter(sender));
-                    return/* false*/;
-                }
-
-                //return true;
             } catch (Exception e) {
-                sender.sendMessage(ChatColor.RED + "Exception during command dispatch, report to developer (include the server log)");
+                sender.sendMessage(
+                        ChatColor.RED + "Exception during command dispatch, report to developer (include the server log)");
                 e.printStackTrace();
-                //return false;
             }
         }
 

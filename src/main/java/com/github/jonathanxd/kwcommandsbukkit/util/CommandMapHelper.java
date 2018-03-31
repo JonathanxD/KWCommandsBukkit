@@ -50,7 +50,7 @@ public class CommandMapHelper {
     }
 
     private static boolean check(Object object, Class<?> type) {
-        return object != null && type != null && type.isInstance(object);
+        return type != null && type.isInstance(object);
     }
 
     private static <T> T getFieldValue(Object object, String fieldName) {

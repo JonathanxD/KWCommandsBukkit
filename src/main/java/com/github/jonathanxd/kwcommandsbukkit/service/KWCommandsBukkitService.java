@@ -27,6 +27,7 @@
  */
 package com.github.jonathanxd.kwcommandsbukkit.service;
 
+import com.github.jonathanxd.iutils.text.localizer.Localizer;
 import com.github.jonathanxd.kwcommands.command.Command;
 import com.github.jonathanxd.kwcommands.completion.Completion;
 import com.github.jonathanxd.kwcommands.dispatch.CommandDispatcher;
@@ -34,7 +35,9 @@ import com.github.jonathanxd.kwcommands.manager.CommandManager;
 import com.github.jonathanxd.kwcommands.parser.CommandParser;
 import com.github.jonathanxd.kwcommands.processor.CommandProcessor;
 import com.github.jonathanxd.kwcommands.reflect.env.ReflectionEnvironment;
+import com.github.jonathanxd.kwcommandsbukkit.text.LocalizedSender;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -68,6 +71,36 @@ public interface KWCommandsBukkitService {
      * @param command Command to unregister.
      */
     void unregisterCommand(Command command);
+
+    /**
+     * Gets the {@link LocalizedSender} of {@code sender.}
+     *
+     * @param sender Sender.
+     * @return {@link LocalizedSender} of {@code sender.}
+     */
+    LocalizedSender getLocalizedSender(CommandSender sender);
+
+    /**
+     * Registers a provider of {@link Localizer}.
+     *
+     * @param provider Provider of {@link Localizer}.
+     */
+    void registerLocalizerProvider(LocaleProvider provider);
+
+    /**
+     * Unregisters a provider of {@link Localizer}.
+     *
+     * @param provider Provider of {@link Localizer}.
+     * @return Whether {@code provider} was unregistered or not.
+     */
+    boolean unregisterLocalizerProvider(LocaleProvider provider);
+
+    /**
+     * Gets the provider of localizer.
+     *
+     * @return Provider of localizer.
+     */
+    LocaleProvider getLocalizerProvider();
 
     /**
      * Gets the command manager used to manage commands.
