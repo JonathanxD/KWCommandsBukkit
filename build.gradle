@@ -1,10 +1,10 @@
 plugins {
-    id 'com.github.hierynomus.license' version '0.13.1'
-    id 'com.github.johnrengelman.shadow' version '1.2.4'
+    id 'com.github.hierynomus.license' version '0.15.0'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
 group 'com.github.jonathanxd'
-version '1.1.14-SNAPSHOT'
+version '1.1.15-SNAPSHOT'
 
 apply plugin: 'java'
 apply plugin: 'license'
@@ -50,9 +50,14 @@ artifacts {
 }
 
 dependencies {
-    compile 'com.github.JonathanxD:KWCommands:1.6.8'
-    compile 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    implementation 'com.github.JonathanxD:KWCommands:1.6.23'
+    implementation 'org.bukkit:bukkit:1.8-R0.1-SNAPSHOT'
+    implementation "com.github.JonathanxD.JwIUtils:JwIUtils:4.17.2"
+    implementation "com.github.JonathanxD.JwIUtils:jwiutils-kt:4.17.2"
+    implementation "com.github.JonathanxD.JwIUtils:json-lang-loader:4.17.2"
+    implementation "com.github.JonathanxD.JwIUtils:links:4.17.2"
+
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
 shadowJar {

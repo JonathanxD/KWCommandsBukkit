@@ -152,7 +152,8 @@ public final class KWBukkitCommand extends org.bukkit.command.Command implements
             this.informationManager.registerRecommendations(
                     this.getService().getCommandManager(),
                     this.getService().getCommandParser(),
-                    this.getService().getCommandDispatcher()
+                    this.getService().getCommandDispatcher(),
+                    null
             );
         }
 
